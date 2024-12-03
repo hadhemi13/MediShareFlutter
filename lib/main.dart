@@ -3,6 +3,7 @@ import 'package:medishareflutter/views/FilesPage.dart';
 import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/ProfileScreen.dart';
 import 'package:medishareflutter/views/UploadImage.dart';
+import 'package:medishareflutter/views/welcome.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 255, 255, 255)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: WelcomePage(),
     );
   }
 }
@@ -45,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
     HomePage(),
     const FilesPage(),
     const UploadImage(), // Passe directement updateIndex
-    ProfileScreen(),
+    ProfileView(),
   ];
 
   void _onItemTapped(int index) {
