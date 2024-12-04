@@ -85,29 +85,31 @@ class _UploadImageState extends State<UploadImage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Upload Image")),
-      body: Center(
-        child: _image != null
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.file(
-                    _image!,
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text("Image sélectionnée avec succès."),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _uploadImage,
-                    child: const Text("Upload"),
-                  ),
-                ],
-              )
-            : const CircularProgressIndicator(), // Loader temporaire
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: const Text("Upload Image")),
+        body: Center(
+          child: _image != null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.file(
+                      _image!,
+                      height: 200,
+                      width: 200,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text("Image sélectionnée avec succès."),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _uploadImage,
+                      child: const Text("Upload"),
+                    ),
+                  ],
+                )
+              : const CircularProgressIndicator(), // Loader temporaire
+        ),
       ),
     );
   }

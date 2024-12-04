@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/views/login.dart';
 
@@ -10,6 +11,67 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   // Variables to toggle password visibility
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool isPasswordValid = true;
+  bool isConfirmPasswordValid = true;
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  String passwordError = '';
+  String confirmPasswordError = '';
+  String generatedPassword = '';
+
+  // Password Validation Rules
+  bool isPasswordValidFormat(String password) {
+    // Password must be at least 8 characters long, contain a number, a lowercase letter, an uppercase letter, and a special character
+    String pattern =
+        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*()_+\-=\[\]{};":\\|,.<>\/?]).{8,}$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(password);
+  }
+
+  // Method to generate a secure password
+  String generateSecurePassword() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&*()_-+=<>?';
+    Random random = Random();
+    String password = List.generate(12, (index) => characters[random.nextInt(characters.length)]).join();
+    return password;
+  }
+
+  void generateSecurePasswordAndFill() {
+    setState(() {
+      generatedPassword = generateSecurePassword();
+      passwordController.text = generatedPassword;
+      confirmPasswordController.text = generatedPassword;
+    });
+  }
+
+  void _showPasswordSuggestionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Generate Secure Password'),
+          content: Text('Would you like to generate a secure password for your account?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                // Cancel action: Close the dialog
+                Navigator.of(context).pop();
+              },
+              child: Text('No, I\'ll enter my own'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Generate secure password and fill it in both fields
+                generateSecurePasswordAndFill();
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Yes, generate one'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   // Function to show success dialog
   void _showSuccessDialog() {
@@ -34,6 +96,40 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         );
       },
     );
+  }
+
+  // Validate form
+  void validateForm() {
+    setState(() {
+      // Check if password is valid
+      if (passwordController.text.isEmpty) {
+        isPasswordValid = false;
+        passwordError = 'Password is required';
+      } else if (!isPasswordValidFormat(passwordController.text)) {
+        isPasswordValid = false;
+        passwordError = 'Password must contain at least 8 characters, including uppercase, lowercase, a number, and a special character';
+      } else {
+        isPasswordValid = true;
+        passwordError = '';
+      }
+
+      // Check if confirm password matches password
+      if (confirmPasswordController.text.isEmpty) {
+        isConfirmPasswordValid = false;
+        confirmPasswordError = 'Confirm password is required';
+      } else if (confirmPasswordController.text != passwordController.text) {
+        isConfirmPasswordValid = false;
+        confirmPasswordError = 'Passwords do not match';
+      } else {
+        isConfirmPasswordValid = true;
+        confirmPasswordError = '';
+      }
+
+      // If the form is valid, show success dialog
+      if (isPasswordValid && isConfirmPasswordValid) {
+        _showSuccessDialog();
+      }
+    });
   }
 
   @override
@@ -66,19 +162,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 30), // Space between text and input fields
 
-                // New Password Field with Visibility Toggle
+                // Password TextField with validation
                 TextField(
+                  controller: passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
-                    labelText: "New Password",
+                    prefixIcon: Icon(Icons.lock),
+                    hintText: "Password",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide(
+                        color: Color(0xFF113155), // Default border color
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide(
-                        color: Color(0xFF113155),  // Custom focused border color
-                        width: 2.0,  // Border width
+                        color: Color(0xFF113155), // Focused border color
+                        width: 1, // You can adjust the border width
                       ),
                     ),
                     suffixIcon: IconButton(
@@ -86,7 +187,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         _isPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: Colors.grey,
+                        color: Color(0xFF113155),
                       ),
                       onPressed: () {
                         setState(() {
@@ -95,22 +196,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       },
                     ),
                   ),
+                  onTap: () {
+                    // Show password suggestion dialog when the field is tapped
+                    _showPasswordSuggestionDialog(context);
+                  },
                 ),
-                const SizedBox(height: 20),
+                if (!isPasswordValid)
+                  Text(
+                    passwordError,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                SizedBox(height: 20),
 
-                // Confirm Password Field with Visibility Toggle
+                // Confirm Password TextField with validation
                 TextField(
+                  controller: confirmPasswordController,
                   obscureText: !_isConfirmPasswordVisible,
                   decoration: InputDecoration(
-                    labelText: "Confirm Password",
+                    prefixIcon: Icon(Icons.lock),
+                    hintText: "Confirm Password",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide(
+                        color: Color(0xFF113155), // Default border color
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide(
-                        color: Color(0xFF113155),  // Custom focused border color
-                        width: 2.0,  // Border width
+                        color: Color(0xFF113155), // Focused border color
+                        width: 1, // You can adjust the border width
                       ),
                     ),
                     suffixIcon: IconButton(
@@ -118,7 +233,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         _isConfirmPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: Colors.grey,
+                        color: Color(0xFF113155),
                       ),
                       onPressed: () {
                         setState(() {
@@ -128,16 +243,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                   ),
                 ),
+                if (!isConfirmPasswordValid)
+                  Text(
+                    confirmPasswordError,
+                    style: TextStyle(color: Colors.red),
+                  ),
                 const SizedBox(height: 30),
 
-                // Change Password Button with responsive width
+                // Change Password Button with validation
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
                   height: MediaQuery.of(context).size.height * 0.06, // Responsive height
                   child: ElevatedButton(
                     onPressed: () {
-                      // Implement password change logic here
-                      _showSuccessDialog();  // Show success dialog when password is changed
+                      validateForm();  // Validate form on button press
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF90CAF9), // Same background color

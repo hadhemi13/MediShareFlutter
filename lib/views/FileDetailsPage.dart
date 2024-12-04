@@ -13,66 +13,111 @@ class FileDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(image.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Affichage de l'image
-            Image.file(
-              File(image.path),
-              width: double.infinity,
-              height: 250,
-              fit: BoxFit.cover,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: Text(image.title)),
+        body: SingleChildScrollView( // Wrap body in SingleChildScrollView to make it responsive
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Affichage de l'image
+                Image.file(
+                  File(image.path),
+                  width: double.infinity,
+                  height: 250,
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  image.title,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  image.description ?? 'No description available',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Date: ${image.date}',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+      
+                // Champ de texte pour la description du post
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description du post',
+                    labelStyle: TextStyle(fontSize: 12 , color: Color(0xFF113155)), // Smaller label font size
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF113155), width: 2.0), // Blue border when focused
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.0), // Black border when not focused
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 50),
+      
+                // Spacer to push the button to the bottom when keyboard is visible
+                ElevatedButton(
+                  onPressed: () async {
+                    // Récupérer la description
+                    final newPost = Post(
+                      image: image.path,  // Utiliser le chemin de l'image
+                      description: _descriptionController.text,  // Pass description from the TextField
+                      comments: [],  // Vous pouvez ajouter des commentaires plus tard
+                    );
+      
+                    // Insérer le post dans la base de données
+                    await postViewModel.insertPost(newPost);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent, // Make the background transparent
+                    minimumSize: Size(double.infinity, 50), // Button height
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30), // Rounded corners
+                    ),
+                    side: BorderSide.none, // Optional: Remove any border
+                  ).copyWith(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.transparent,
+                    ),
+                    shadowColor: MaterialStateProperty.all<Color>(
+                      Colors.transparent,
+                    ),
+                  ),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0x9990CAF9),  // Light Blue Start
+                          Color(0xFF90CAF9),   // Light Blue End
+                        ],
+                        begin: Alignment.centerLeft,  // Start gradient from left
+                        end: Alignment.centerRight,   // End gradient at right
+                      ),
+                      borderRadius: BorderRadius.circular(30), // Rounded corners
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 50, // Button height
+                      child: Text(
+                        "Ajouter le Post", // Text on the button
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold, // Bold text
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              image.title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              image.description ?? 'No description available',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Date: ${image.date}',
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-
-            // Champ de texte pour la description du post
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description du post'),
-            ),
-            Spacer(),
-
-            // Bouton pour ajouter le post
-            ElevatedButton(
-              onPressed: () async {
-                // Récupérer la description
-
-                
-                  // Créer un nouveau post
-                  final newPost = Post(
-                    image: image.path,  // Utiliser le chemin de l'image
-                    description: image.description,
-                    comments: [],  // Vous pouvez ajouter des commentaires plus tard
-                  );
-
-                  // Insérer le post dans la base de données
-                  await postViewModel.insertPost(newPost);
-                  
-
-                
-              },
-              child: Text('Ajouter le Post'),
-            ),
-          ],
+          ),
         ),
       ),
     );

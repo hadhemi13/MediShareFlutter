@@ -11,49 +11,100 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  bool isRememberMeChecked = false;
+  bool isEmailValid = true;
+  bool isPasswordValid = true;
+
+  String emailError = '';
+  String passwordError = '';
+
+  void validateInput() {
+    setState(() {
+      // Reset error messages
+      isEmailValid = true;
+      isPasswordValid = true;
+      emailError = '';
+      passwordError = '';
+
+      // Email validation
+      if (emailController.text.isEmpty) {
+        isEmailValid = false;
+        emailError = 'The Email is required.';
+      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
+        isEmailValid = false;
+        emailError = 'Please enter a valid email address : exemple@exemple.com';
+      }
+
+      // Password validation
+      if (passwordController.text.isEmpty) {
+        isPasswordValid = false;
+        passwordError = 'The Password is required.';
+      }
+    });
+  }
+
+  InputDecoration buildInputDecoration({
+    required String hintText,
+    required IconData prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      prefixIcon: Icon(
+        prefixIcon,
+        color: const Color(0xFF113155), // Default color for the icon
+      ),
+      hintText: hintText,
+      hintStyle: const TextStyle(
+                color: Color(0xFF113155), // Default hint text color
+        fontSize: 14, // Smaller font size for hint text
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(
+          color: Color(0xFF113155), // Focused border color
+          width: 1,
+        ),
+      ),
+      suffixIcon: suffixIcon,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset:
-            true, // Ensures the layout adjusts when the keyboard opens
+        resizeToAvoidBottomInset: true, // Adjust layout when the keyboard opens
         body: SingleChildScrollView(
-          // Make the body scrollable when keyboard appears
           child: Column(
             children: [
-              // Green box with a horizontal wave
+              // Header with a wave and logo
               ClipPath(
                 clipper: HorizontalWaveClipper(),
                 child: Container(
-                  height: MediaQuery.of(context).size.height *
-                      0.30, // Reduced height from 0.4 to 0.25
+                  height: MediaQuery.of(context).size.height * 0.30,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Colors.white,
-                        Color(0xFF90CAF9)
-                      ], // White to Light Blue
+                      colors: [Colors.white, Color(0xFF90CAF9)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                   ),
                   child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/logo.png', // Path to your image
-                          height: 100, // Adjust the size as needed
-                          width: 100,
-                        ),
-                        const SizedBox(height: 20),
-                      ],
+                    child: Image.asset(
+                      'assets/logo.png',
+                      height: 100,
+                      width: 100,
                     ),
                   ),
                 ),
               ),
-              // Login form below
+              // Login Form
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -71,43 +122,27 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.person),
-                        hintText: "Identifiant",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF113155), // Default border color
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF113155), // Focused border color
-                            width: 1, // You can adjust the border width
-                          ),
-                        ),
+                      controller: emailController,
+                      decoration: buildInputDecoration(
+                        hintText: "Email",
+                        prefixIcon: Icons.person,
                       ),
                     ),
+                    if (!isEmailValid)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, left: 15),
+                        child: Text(
+                          emailError,
+                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
                     const SizedBox(height: 20),
                     TextField(
+                      controller: passwordController,
                       obscureText: !isPasswordVisible,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        hintText: "Mot de passe",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF113155), // Default border color
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF113155), // Focused border color
-                            width: 1, // You can adjust the border width
-                          ),
-                        ),
+                      decoration: buildInputDecoration(
+                        hintText: "Password",
+                        prefixIcon: Icons.lock,
                         suffixIcon: IconButton(
                           icon: Icon(
                             isPasswordVisible
@@ -123,87 +158,81 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+                    if (!isPasswordValid)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, left: 15),
+                        child: Text(
+                          passwordError,
+                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
                     const SizedBox(height: 10),
-
                     Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .end, // Align the TextButton to the right
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    forgotpassword(), // Replace with your Password Reset screen
+                                builder: (context) => ForgotPassword(),
                               ),
                             );
                           },
                           child: const Text(
-                            "Forgot your password? Reset it",
-                            style: TextStyle(color: Colors.blue),
+                            "Forgot your password ? Reset it",
+                            style: TextStyle(color:  Color(0xFF113155)),
                           ),
                         ),
                       ],
                     ),
-
                     Row(
                       children: [
-                        Checkbox(value: false, onChanged: (bool? value) {}),
-                        const Text("Enregistrer mes informations"),
+                        Checkbox(
+                          value: isRememberMeChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isRememberMeChecked = value ?? true;
+                            });
+                          },
+                          fillColor: MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return const Color(0xFF90CAF9); // Background color when checked
+                              }
+                              return Colors.transparent; // Background color when unchecked
+                            },
+                          ),
+                        ),
+                        const Text("Remember me "),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // Gradient Button
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors
-                            .transparent, // Make the background transparent
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        side: BorderSide.none, // Optional: Remove any border
-                      ).copyWith(
-                        // Applying gradient to the button
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.transparent,
-                        ),
-                        shadowColor: MaterialStateProperty.all<Color>(
-                          Colors.transparent,
-                        ),
-                      ),
-                      child: Ink(
+                    GestureDetector(
+                      onTap: () {
+                        validateInput();
+                        if (isEmailValid && isPasswordValid) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MyHomePage()),
+                          );
+                        }
+                      },
+                      child: Container(
+                        height: 50,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0x6B90CAF9),
-                              Color(0xFF90CAF9)
-                            ], // White to Light Blue
-                            begin: Alignment
-                                .centerLeft, // Start gradient from left
-                            end: Alignment.centerRight, // End gradient at right
+                            colors: [ Color(0x9990CAF9),
+                              Color(0xFF90CAF9)],
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MyHomePage()),
-                            );
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 50,
-                            child: const Text(
-                              "Sign in",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        child: const Center(
+                          child: Text(
+                            "Sign in",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -220,8 +249,8 @@ class LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: const Text(
-                          "Vous n'avez pas de compte? Créer un compte",
-                          style: TextStyle(color: Colors.blue),
+                          "You don't have an account ? Create One",
+                          style: TextStyle(color:  Color(0xFF113155)),
                         ),
                       ),
                     ),
@@ -236,28 +265,21 @@ class LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Custom clipper for horizontal wave
+// Custom clipper for the header wave
 class HorizontalWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
 
-    // Start from the top-left corner
     path.lineTo(0, size.height * 0.85);
-
-    // Create the first wave
     path.quadraticBezierTo(
-      size.width * 0.25, size.height, // First control point and end
+      size.width * 0.25, size.height,
       size.width * 0.5, size.height * 0.85,
     );
-
-    // Create the second wave
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.7, // Second control point
+      size.width * 0.75, size.height * 0.7,
       size.width, size.height * 0.85,
     );
-
-    // Draw the rest of the path
     path.lineTo(size.width, 0);
     path.close();
 

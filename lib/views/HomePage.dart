@@ -22,32 +22,34 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("MediShare"),
-        centerTitle: true,
-        
-      ),
-      body: FutureBuilder<List<Post>>(
-        future: _postsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No posts available.'));
-          }
-
-          final posts = snapshot.data!;
-          return ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return PostCard(post: post);
-            },
-          );
-        },
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("MediShare"),
+          centerTitle: true,
+          
+        ),
+        body: FutureBuilder<List<Post>>(
+          future: _postsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No posts available.'));
+            }
+      
+            final posts = snapshot.data!;
+            return ListView.builder(
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return PostCard(post: post);
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -104,7 +106,7 @@ class _PostCardState extends State<PostCard> {
               IconButton(
                 icon: Icon(
                   _showComments ? Icons.comment_bank : Icons.comment,
-                  color: Colors.deepPurple,
+                  color: Color(0xFF113155),
                 ),
                 onPressed: () {
                   setState(() {
@@ -116,7 +118,7 @@ class _PostCardState extends State<PostCard> {
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Text(
                   _showComments ? 'Hide comments' : 'View comments',
-                  style: TextStyle(color: Colors.deepPurple, fontSize: 14.0),
+                  style: TextStyle(color: Color(0xFF113155), fontSize: 14.0),
                 ),
               ),
             ],
@@ -166,7 +168,7 @@ class _PostCardState extends State<PostCard> {
                   ),
                   SizedBox(width: 10.0),
                   IconButton(
-                    icon: Icon(Icons.send, color: Colors.deepPurple),
+                    icon: Icon(Icons.send, color: Color(0xFF113155)),
                     onPressed: () async {
                       if (_commentController.text.isNotEmpty) {
                         final Comment newComment = Comment(
