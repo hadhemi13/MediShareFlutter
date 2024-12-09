@@ -3,6 +3,7 @@ import 'package:medishareflutter/main.dart';
 import 'package:medishareflutter/views/forgotpassword.dart';
 import 'package:medishareflutter/views/sendmail.dart';
 import 'package:medishareflutter/views/signup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -33,7 +34,8 @@ class LoginScreenState extends State<LoginScreen> {
       if (emailController.text.isEmpty) {
         isEmailValid = false;
         emailError = 'The Email is required.';
-      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
+      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+          .hasMatch(emailController.text)) {
         isEmailValid = false;
         emailError = 'Please enter a valid email address : exemple@exemple.com';
       }
@@ -58,7 +60,7 @@ class LoginScreenState extends State<LoginScreen> {
       ),
       hintText: hintText,
       hintStyle: const TextStyle(
-                color: Color(0xFF113155), // Default hint text color
+        color: Color(0xFF113155), // Default hint text color
         fontSize: 14, // Smaller font size for hint text
       ),
       border: OutlineInputBorder(
@@ -133,7 +135,8 @@ class LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 5, left: 15),
                         child: Text(
                           emailError,
-                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 12),
                         ),
                       ),
                     const SizedBox(height: 20),
@@ -163,7 +166,8 @@ class LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 5, left: 15),
                         child: Text(
                           passwordError,
-                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 12),
                         ),
                       ),
                     const SizedBox(height: 10),
@@ -181,7 +185,7 @@ class LoginScreenState extends State<LoginScreen> {
                           },
                           child: const Text(
                             "Forgot your password ? Reset it",
-                            style: TextStyle(color:  Color(0xFF113155)),
+                            style: TextStyle(color: Color(0xFF113155)),
                           ),
                         ),
                       ],
@@ -196,11 +200,13 @@ class LoginScreenState extends State<LoginScreen> {
                             });
                           },
                           fillColor: MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
+                            (Set<MaterialState> states) {
                               if (states.contains(MaterialState.selected)) {
-                                return const Color(0xFF90CAF9); // Background color when checked
+                                return const Color(
+                                    0xFF90CAF9); // Background color when checked
                               }
-                              return Colors.transparent; // Background color when unchecked
+                              return Colors
+                                  .transparent; // Background color when unchecked
                             },
                           ),
                         ),
@@ -209,12 +215,17 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         validateInput();
                         if (isEmailValid && isPasswordValid) {
-                          Navigator.push(
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', true);
+
+                          Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => MyHomePage()),
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()),
+                            (route) => false,
                           );
                         }
                       },
@@ -222,8 +233,7 @@ class LoginScreenState extends State<LoginScreen> {
                         height: 50,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [ Color(0x9990CAF9),
-                              Color(0xFF90CAF9)],
+                            colors: [Color(0x9990CAF9), Color(0xFF90CAF9)],
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -250,7 +260,7 @@ class LoginScreenState extends State<LoginScreen> {
                         },
                         child: const Text(
                           "You don't have an account ? Create One",
-                          style: TextStyle(color:  Color(0xFF113155)),
+                          style: TextStyle(color: Color(0xFF113155)),
                         ),
                       ),
                     ),
@@ -273,12 +283,16 @@ class HorizontalWaveClipper extends CustomClipper<Path> {
 
     path.lineTo(0, size.height * 0.85);
     path.quadraticBezierTo(
-      size.width * 0.25, size.height,
-      size.width * 0.5, size.height * 0.85,
+      size.width * 0.25,
+      size.height,
+      size.width * 0.5,
+      size.height * 0.85,
     );
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.7,
-      size.width, size.height * 0.85,
+      size.width * 0.75,
+      size.height * 0.7,
+      size.width,
+      size.height * 0.85,
     );
     path.lineTo(size.width, 0);
     path.close();

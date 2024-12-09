@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:medishareflutter/models/Comment.dart';
 import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/viewModels/PostViewModel.dart';
-import 'dart:io'; // Import for file handling
+import 'dart:io';
+
+import 'package:medishareflutter/views/full_screen_image.dart'; // Import for file handling
 
 class HomePage extends StatefulWidget {
   final PostViewModel postViewModel = PostViewModel();
@@ -27,28 +29,71 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: Text("MediShare"),
           centerTitle: true,
-          
         ),
-        body: FutureBuilder<List<Post>>(
-          future: _postsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No posts available.'));
-            }
-      
-            final posts = snapshot.data!;
-            return ListView.builder(
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return PostCard(post: post);
-              },
-            );
-          },
+        body: Column(
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child:
+                  // Row of buttons
+                  Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle 'Recent' button logic
+                      },
+                      child: Text('Recent'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle 'Trending' button logic
+                      },
+                      child: Text('Trending'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle 'Best' button logic
+                      },
+                      child: Text('Best'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle 'Risking' button logic
+                      },
+                      child: Text('Risking'),
+                    ),
+                  ],
+                ),
+              ),
+              // Expanded ListView
+            ),
+            Expanded(
+              child: FutureBuilder<List<Post>>(
+                future: _postsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No posts available.'));
+                  }
+
+                  final posts = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      final post = posts[index];
+                      return PostCard(post: post);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -79,13 +124,43 @@ class _PostCardState extends State<PostCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
-            child: Image.file(
-              File(widget.post.image),
-              fit: BoxFit.cover,
-              height: 200,
-              width: double.infinity,
+          // most create row here ...
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: [
+                // Image from assets
+                CircleAvatar(
+                  backgroundImage:
+                      AssetImage('assets/images/profile_placeholder.png'),
+                  radius: 20.0,
+                ),
+                SizedBox(width: 12.0),
+                // Name and hour
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'John Doe', // Replace with dynamic name if needed
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      Text(
+                        '2 hours ago', // Replace with dynamic time if needed
+                        style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 14.0,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Action icons
+              ],
             ),
           ),
           Padding(
@@ -99,10 +174,42 @@ class _PostCardState extends State<PostCard> {
               ),
             ),
           ),
+
+          ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        FullScreenImage(imagePath: widget.post.image),
+                  ),
+                );
+              },
+              child: Image.file(
+                File(widget.post.image),
+                fit: BoxFit.cover,
+                height: 200,
+                width: double.infinity,
+              ),
+            ),
+          ),
           Divider(color: Colors.grey[300]),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const SizedBox(width: 0.2),
+              Container(
+                child: Row(
+                  children: [
+                    Icon(Icons.arrow_upward, color: Colors.grey[700]),
+                    Text("16"),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 0.2),
               IconButton(
                 icon: Icon(
                   _showComments ? Icons.comment_bank : Icons.comment,
@@ -114,13 +221,9 @@ class _PostCardState extends State<PostCard> {
                   });
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: Text(
-                  _showComments ? 'Hide comments' : 'View comments',
-                  style: TextStyle(color: Color(0xFF113155), fontSize: 14.0),
-                ),
-              ),
+              const SizedBox(width: 0.2),
+              Icon(Icons.ios_share, color: Colors.grey[700]),
+              const SizedBox(width: 0.2),
             ],
           ),
           if (_showComments)
@@ -139,7 +242,8 @@ class _PostCardState extends State<PostCard> {
                         Expanded(
                           child: Text(
                             comment.content,
-                            style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
+                            style: TextStyle(
+                                fontSize: 14.0, color: Colors.grey[700]),
                           ),
                         ),
                       ],

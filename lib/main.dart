@@ -3,27 +3,51 @@ import 'package:medishareflutter/views/FilesPage.dart';
 import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/ProfileScreen.dart';
 import 'package:medishareflutter/views/UploadImage.dart';
-import 'package:medishareflutter/views/welcome.dart';
-
-void main() {
-  runApp(const MyApp());
+import 'package:medishareflutter/views/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter environment is initialized.
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  runApp( MyApp(initialIsLoggedIn: isLoggedIn));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+/// Main application widget
+class MyApp extends StatefulWidget  {
 
+  final bool initialIsLoggedIn;
+
+
+  MyApp({required this.initialIsLoggedIn});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+late bool isLoggedIn;
+ @override
+  void initState() {
+    super.initState();
+    isLoggedIn = widget.initialIsLoggedIn;
+  }
+  
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 255, 255, 255)),
-        useMaterial3: true,
-      ),
-      home: ProfileView(),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+          useMaterial3: true,
+        ),
+      home: isLoggedIn 
+          ? MyHomePage() 
+          : LoginScreen(), 
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -35,18 +59,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  // Fonction pour mettre à jour l'indice
-  void _updateIndex(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+
 
   final List<Widget> _pages = [
     HomePage(),
     const FilesPage(),
     const UploadImage(), // Passe directement updateIndex
-    ProfileView(),
+    const ProfileView(),
   ];
 
   void _onItemTapped(int index) {
@@ -60,9 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: _pages[_selectedIndex], // Afficher la page sélectionnée
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex, 
-        onTap: _onItemTapped, 
-        selectedItemColor: Colors.black, 
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -86,5 +105,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-

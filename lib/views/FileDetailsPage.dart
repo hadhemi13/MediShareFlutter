@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:medishareflutter/main.dart';
 import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/viewModels/PostViewModel.dart';
 import 'package:medishareflutter/models/ImageDao.dart';
 import 'dart:io';
+
+import 'package:medishareflutter/views/HomePage.dart';
+import 'package:medishareflutter/views/full_screen_image.dart';
 
 class FileDetailsPage extends StatelessWidget {
   final ImageDao image;
@@ -16,70 +20,108 @@ class FileDetailsPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: Text(image.title)),
-        body: SingleChildScrollView( // Wrap body in SingleChildScrollView to make it responsive
+        body: SingleChildScrollView(
+          // Wrap body in SingleChildScrollView to make it responsive
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Affichage de l'image
-                Image.file(
-                  File(image.path),
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            FullScreenImage(imagePath: image.path),
+                      ),
+                    );
+                  },
+                  child: Image.file(
+                    File(image.path),
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
                   image.title,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  image.description ?? 'No description available',
-                  style: const TextStyle(fontSize: 16),
-                ),
+
                 const SizedBox(height: 20),
                 Text(
                   'Date: ${image.date}',
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
-      
+                const TextField(
+                  
+                  decoration: InputDecoration(
+                    labelText: 'Title du post',
+                    labelStyle: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF113155)), // Smaller label font size
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color(0xFF113155),
+                          width: 2.0), // Blue border when focused
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.black,
+                          width: 1.0), // Black border when not focused
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20,),
                 // Champ de texte pour la description du post
                 TextField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Description du post',
-                    labelStyle: TextStyle(fontSize: 12 , color: Color(0xFF113155)), // Smaller label font size
+                    labelStyle: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF113155)), // Smaller label font size
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF113155), width: 2.0), // Blue border when focused
+                      borderSide: BorderSide(
+                          color: Color(0xFF113155),
+                          width: 2.0), // Blue border when focused
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0), // Black border when not focused
+                      borderSide: BorderSide(
+                          color: Colors.black,
+                          width: 1.0), // Black border when not focused
                     ),
                   ),
                 ),
                 const SizedBox(height: 50),
-      
+
                 // Spacer to push the button to the bottom when keyboard is visible
                 ElevatedButton(
                   onPressed: () async {
                     // Récupérer la description
                     final newPost = Post(
-                      image: image.path,  // Utiliser le chemin de l'image
-                      description: _descriptionController.text,  // Pass description from the TextField
-                      comments: [],  // Vous pouvez ajouter des commentaires plus tard
+                      image: image.path, // Utiliser le chemin de l'image
+                      description: _descriptionController
+                          .text, // Pass description from the TextField
+                      comments: [], // Vous pouvez ajouter des commentaires plus tard
                     );
-      
+
                     // Insérer le post dans la base de données
                     await postViewModel.insertPost(newPost);
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent, // Make the background transparent
+                    backgroundColor:
+                        Colors.transparent, // Make the background transparent
                     minimumSize: Size(double.infinity, 50), // Button height
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30), // Rounded corners
+                      borderRadius:
+                          BorderRadius.circular(30), // Rounded corners
                     ),
                     side: BorderSide.none, // Optional: Remove any border
                   ).copyWith(
@@ -92,20 +134,21 @@ class FileDetailsPage extends StatelessWidget {
                   ),
                   child: Ink(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
-                          Color(0x9990CAF9),  // Light Blue Start
-                          Color(0xFF90CAF9),   // Light Blue End
+                          Color(0x9990CAF9), // Light Blue Start
+                          Color(0xFF90CAF9), // Light Blue End
                         ],
-                        begin: Alignment.centerLeft,  // Start gradient from left
-                        end: Alignment.centerRight,   // End gradient at right
+                        begin: Alignment.centerLeft, // Start gradient from left
+                        end: Alignment.centerRight, // End gradient at right
                       ),
-                      borderRadius: BorderRadius.circular(30), // Rounded corners
+                      borderRadius:
+                          BorderRadius.circular(30), // Rounded corners
                     ),
                     child: Container(
                       alignment: Alignment.center,
                       height: 50, // Button height
-                      child: Text(
+                      child: const Text(
                         "Ajouter le Post", // Text on the button
                         style: TextStyle(
                           color: Colors.white,
