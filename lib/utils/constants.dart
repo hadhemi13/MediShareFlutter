@@ -1,20 +1,22 @@
 /// API Endpoints
 class Constants {
-  static const String baseUrl = 'http://172.18.2.14:3000/';
-  static const String loginEndpoint = 'user/login';
-  static const String addCommercial = 'user/create-commercial';
-  static const String getCommercials = 'user/commercials';
-  static const String upadteProfile = 'user/update-profile';
-  static const String changePassword = 'user/change-password';
-  static const String forgotPassword = 'user/forgot-password';
-  static const String verfiyOtp = 'user/verify-otp';
-  static const String fetchCimenterie='cimenterie';
-  static const String fetchProducts='produit';
+  static const String baseUrl = 'http://192.168.1.94:3000/';
 
 
+  static const String signup = 'auth/signup';
+  static const String login = 'auth/login';
+  static const String confirmEmail = 'auth/confirm-email';
+  static const String refreshTokens = 'auth/refresh';
+  static const String changePassword = 'auth/change-password';
+  static const String forgotPassword = 'auth/forgot-password';
+  static const String verifyOtp = 'auth/verify-otp';
+  static const String resetPassword = 'auth/reset-password';
+  static const String googleLogin = 'auth/google';
+  static const String updateUser = 'auth/update-user';
+  static const String getAllUsers = 'auth/users';
 }
 
-class ResponseMessage{
-  static const String forgotPassword = 'Un OTP a été envoyé à votre adresse email.!!! most change this message later in ***utils/constants/ResponseMessage***';
-
+class ResponseMessage {
+  static const String forgotPassword =
+      'Un OTP a été envoyé à votre adresse email.!!! most change this message later in ***utils/constants/ResponseMessage***';
 }

@@ -1,6 +1,4 @@
-import 'package:medishareflutter/models/Comment.dart';
 import 'package:medishareflutter/models/ImageDao.dart';
-import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/sqflite/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
 

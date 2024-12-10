@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/main.dart';
+import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/views/forgotpassword.dart';
-import 'package:medishareflutter/views/sendmail.dart';
 import 'package:medishareflutter/views/signup.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -218,15 +219,44 @@ class LoginScreenState extends State<LoginScreen> {
                       onTap: () async {
                         validateInput();
                         if (isEmailValid && isPasswordValid) {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool('isLoggedIn', true);
-
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MyHomePage()),
-                            (route) => false,
-                          );
+                          try {
+                            final loginViewModel =
+                                context.read<LoginViewModel>();
+                            bool success = await loginViewModel.login(
+                              emailController.text.trim(),
+                              passwordController.text.trim(),
+                            );
+                            if (success) {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MyHomePage()),
+                                (route) => false,
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Login Failed'),
+                                    content: Text(loginViewModel.errorMessage ??
+                                        'Unknown error'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          } catch (error) {
+                            print(
+                                "___________________________________________");
+                          }
                         }
                       },
                       child: Container(

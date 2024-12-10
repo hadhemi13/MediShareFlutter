@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/main.dart';
 import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/viewModels/PostViewModel.dart';
 import 'package:medishareflutter/models/ImageDao.dart';
 import 'dart:io';
 
-import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/full_screen_image.dart';
 
 class FileDetailsPage extends StatelessWidget {

@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medishareflutter/main.dart';
 import 'package:medishareflutter/viewModels/ImageViewModel.dart';
 import 'package:medishareflutter/models/ImageDao.dart';
-import 'package:medishareflutter/views/HomePage.dart';
 
 class UploadImage extends StatefulWidget {
   // final Function(int) updateIndex;

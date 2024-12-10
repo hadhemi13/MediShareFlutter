@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:medishareflutter/views/confirmmail.dart';
 import 'package:medishareflutter/views/login.dart';
 import 'package:medishareflutter/views/terms.dart';
-import 'package:path/path.dart';  // Import login screen for navigation
 
 class SignUpScreen extends StatefulWidget {
   @override

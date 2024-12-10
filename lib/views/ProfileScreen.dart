@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medishareflutter/views/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
@@ -11,7 +13,7 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  File? _imageFile;  // To store the picked image file
+  File? _imageFile; // To store the picked image file
 
   // Function to pick image from gallery or camera
   Future<void> _pickImage(ImageSource source) async {
@@ -20,7 +22,7 @@ class _ProfileViewState extends State<ProfileView> {
 
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path);  // Update the image
+        _imageFile = File(pickedFile.path); // Update the image
       });
     }
   }
@@ -36,14 +38,14 @@ class _ProfileViewState extends State<ProfileView> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _pickImage(ImageSource.camera);  // Pick from camera
+                _pickImage(ImageSource.camera); // Pick from camera
               },
               child: const Text('Camera'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _pickImage(ImageSource.gallery);  // Pick from gallery
+                _pickImage(ImageSource.gallery); // Pick from gallery
               },
               child: const Text('Gallery'),
             ),
@@ -92,14 +94,17 @@ class _ProfileViewState extends State<ProfileView> {
                             // Profile Image
                             GestureDetector(
                               onTap: () {
-                                _showImageSourceDialog(context);  // Show image source dialog
+                                _showImageSourceDialog(
+                                    context); // Show image source dialog
                               },
                               child: CircleAvatar(
                                 radius: 30,
                                 backgroundColor: Color(0xF9F9F9F9),
                                 backgroundImage: _imageFile != null
-                                    ? FileImage(_imageFile!)  // Display the picked image
-                                    : const AssetImage('assets/hadh.jpg') as ImageProvider,
+                                    ? FileImage(
+                                        _imageFile!) // Display the picked image
+                                    : const AssetImage('assets/hadh.jpg')
+                                        as ImageProvider,
                               ),
                             ),
                             SizedBox(width: 16),
@@ -186,12 +191,12 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildOptionCard(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required Widget trailing,
-        VoidCallback? onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Widget trailing,
+    VoidCallback? onTap,
+  }) {
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(
@@ -207,14 +212,13 @@ class _ProfileViewState extends State<ProfileView> {
   }
 }
 
-
 // Rest of the functions like _showEditProfileDialog, _showLogoutDialog, etc...
-
 
 void _showEditPasswordDialog(BuildContext context) {
   final TextEditingController oldPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -224,7 +228,8 @@ void _showEditPasswordDialog(BuildContext context) {
 
   // Function to generate a secure password
   String _generateSecurePassword() {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#\$%^&*";
+    const chars =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#\$%^&*";
     final random = Random.secure();
     return List.generate(10, (_) => chars[random.nextInt(chars.length)]).join();
   }
@@ -252,7 +257,9 @@ void _showEditPasswordDialog(BuildContext context) {
                       labelText: 'Old Password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isOldPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          isOldPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -278,7 +285,9 @@ void _showEditPasswordDialog(BuildContext context) {
                       labelText: 'New Password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          isNewPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -294,7 +303,8 @@ void _showEditPasswordDialog(BuildContext context) {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: const Text('Generate Secure Password'),
-                            content: const Text('Do you want to generate a secure password?'),
+                            content: const Text(
+                                'Do you want to generate a secure password?'),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -319,15 +329,16 @@ void _showEditPasswordDialog(BuildContext context) {
                           newPasswordController.text = generatedPassword;
                           confirmPasswordController.text = generatedPassword;
                         });
-                        _formKey.currentState?.validate(); // Trigger validation after update
+                        _formKey.currentState
+                            ?.validate(); // Trigger validation after update
                       }
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'New password is required.';
                       }
-                      final passwordRegex =
-                      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*])[A-Za-z\d!@#\$%^&*]{6,}$');
+                      final passwordRegex = RegExp(
+                          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%^&*])[A-Za-z\d!@#\$%^&*]{6,}$');
                       if (!passwordRegex.hasMatch(value)) {
                         return 'Password must include uppercase, lowercase, digit, and special character.';
                       }
@@ -344,11 +355,14 @@ void _showEditPasswordDialog(BuildContext context) {
                       labelText: 'Confirm New Password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
-                            isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                            isConfirmPasswordVisible =
+                                !isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -394,8 +408,6 @@ void _showEditPasswordDialog(BuildContext context) {
     },
   );
 }
-
-
 
 void _showEditProfileDialog(BuildContext context) {
   final TextEditingController emailController = TextEditingController();
@@ -503,7 +515,6 @@ void _showLogoutDialog(BuildContext context) {
             //mainAxisAlignment: MainAxisAlignment.spaceBetween, // This spreads the buttons to the ends
             children: [
               const SizedBox(width: 25),
-
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
@@ -517,13 +528,20 @@ void _showLogoutDialog(BuildContext context) {
               ),
               const SizedBox(width: 40),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('isLoggedIn', false);
+                  await prefs.setString('userId', "");
+                  await prefs.setString('userName', "");
+                  await prefs.setString('userEmail', "");
+                  await prefs.setString('accessToken', "");
+                  await prefs.setString('refreshToken', "");
                   // Implement your logout logic here
                   Navigator.of(context).pop();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );// Close the dialog
+                  ); // Close the dialog
                 },
                 child: const Text("Confirm"),
               ),
@@ -531,8 +549,8 @@ void _showLogoutDialog(BuildContext context) {
           )
 
           // OK Button
-
         ],
       );
     },
-  );}
+  );
+}
