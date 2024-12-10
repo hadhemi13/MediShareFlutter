@@ -58,8 +58,8 @@ class FileDetailsPage extends StatelessWidget {
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
+
                 const TextField(
-                  
                   decoration: InputDecoration(
                     labelText: 'Title du post',
                     labelStyle: TextStyle(
@@ -77,6 +77,7 @@ class FileDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                
                 SizedBox(height: 20,),
                 // Champ de texte pour la description du post
                 TextField(
