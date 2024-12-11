@@ -1,6 +1,6 @@
 /// API Endpoints
 class Constants {
-  static const String baseUrl = 'http://192.168.1.94:3000/';
+  static const String baseUrl = 'http://172.18.2.14:3000/';
 
 
   static const String signup = 'auth/signup';
@@ -14,6 +14,11 @@ class Constants {
   static const String googleLogin = 'auth/google';
   static const String updateUser = 'auth/update-user';
   static const String getAllUsers = 'auth/users';
+  static const String createComment = 'comment';
+  static const String fetchCommentsByIdPost = 'comment';
+  static const String createPost = 'post';
+  static const String likePost = 'post/inc/upvotes';
+  static const String fetchPosts = 'post/posts';
 }
 
 class ResponseMessage {

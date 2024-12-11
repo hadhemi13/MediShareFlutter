@@ -2,24 +2,29 @@ import 'package:medishareflutter/models/Comment.dart';
 
 class Post {
   final int? id;
+  final String idImage;
   final String image;
   final String description;
-  final List<Comment> comments;  // Liste des commentaires associés
-
+  //final List<Comment> comments;  // Liste des commentaires associés
+  final String title;
   Post({
     this.id,
+    required this.idImage,
     required this.image,
     required this.description,
-   this.comments = const [], 
+    required this.title,
+   //this.comments = const [], 
   });
 
   // From JSON
-  factory Post.fromJson(Map<String, dynamic> json, List<Comment> comments) {
+  factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       id: json['id'],
+      idImage: json['idImage'],
       image: json['image'],
       description: json['description'],
-      comments: comments,  // Associez les commentaires ici
+      title: json['title'],
+    //  comments: comments,  // Associez les commentaires ici
     );
   }
 
@@ -27,8 +32,10 @@ class Post {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'idImage': idImage,
       'image': image,
       'description': description,
+      'title': title,
     };
   }
 }

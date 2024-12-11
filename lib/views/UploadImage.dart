@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:medishareflutter/main.dart';
-import 'package:medishareflutter/viewModels/ImageViewModel.dart';
-import 'package:medishareflutter/models/ImageDao.dart';
+import 'package:medishareflutter/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UploadImage extends StatefulWidget {
-  // final Function(int) updateIndex;
   const UploadImage({super.key});
 
   @override
@@ -15,12 +15,11 @@ class UploadImage extends StatefulWidget {
 
 class _UploadImageState extends State<UploadImage> {
   File? _image;
-  final ImageViewModel _viewModel = ImageViewModel();
 
   @override
   void initState() {
     super.initState();
-    _pickImage(); // Sélectionner une image à l'ouverture de la page
+    _pickImage(); // Pick an image when the page opens
   }
 
   Future<void> _pickImage() async {
@@ -29,56 +28,55 @@ class _UploadImageState extends State<UploadImage> {
 
     if (pickedFile != null) {
       setState(() {
-        _image = File(
-            pickedFile.path); // Met à jour _image avec l'image sélectionnée
+        _image = File(pickedFile.path);
       });
     } else {
-      // Si aucune image n'est choisie, revenir à la page précédente
-      print('Aucune image sélectionnée.');
-       Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage()),
-            
-          );
+      // If no image is selected, navigate back
+      print('No image selected.');
+      Navigator.pop(context);
     }
   }
 
   Future<void> _uploadImage() async {
-
     if (_image != null) {
-      // Créer une instance de Image
+      try {
+        final uri = Uri.parse('${Constants.baseUrl}image/upload');
+        final request = http.MultipartRequest('POST', uri);
 
-      final newImage = ImageDao(
-       path: _image!.path, // Chemin dynamique
-        title: "Uploaded Image", // Titre par défaut
-        description: "Description automatique", // Description par défaut
-        date: DateTime.now(), // Date dynamique
-      );
-      // Enregistrer dans SQLite via le ViewModel
-      int result = await _viewModel.insertImage(newImage);
-      if (result > 0) {
+        // Attach the image file
+        request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
+        final prefs = await SharedPreferences.getInstance();
+        // Add additional fields like userId
+        request.fields['userId'] = await prefs.getString('userId')!; // Replace with dynamic user ID if needed
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image enregistrée avec succès !")),
-        );
-        _image=null;
-         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage()),
-            
+        final response = await request.send();
+
+        if (response.statusCode == 201) {
+          final responseBody = await http.Response.fromStream(response);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Upload successful: ${responseBody.body}')),
           );
-        //widget.updateIndex(0); 
-       // Navigator.popUntil(context, ModalRoute.withName('/'));
-      } else {
-    
-
+          setState(() {
+            _image = null;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MyHomePage()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Upload failed: ${response.statusCode}')),
+          );
+        }
+      } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Erreur lors de l'enregistrement de l'image.")),
+          SnackBar(content: Text('Error uploading image: $error')),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No image selected.')),
+      );
     }
   }
 
@@ -99,7 +97,7 @@ class _UploadImageState extends State<UploadImage> {
                       fit: BoxFit.cover,
                     ),
                     const SizedBox(height: 20),
-                    const Text("Image sélectionnée avec succès."),
+                    const Text("Image selected successfully."),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _uploadImage,
@@ -107,7 +105,7 @@ class _UploadImageState extends State<UploadImage> {
                     ),
                   ],
                 )
-              : const CircularProgressIndicator(), // Loader temporaire
+              : const CircularProgressIndicator(), // Temporary loader
         ),
       ),
     );

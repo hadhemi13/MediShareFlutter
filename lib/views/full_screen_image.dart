@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:io';
 
+import 'package:medishareflutter/utils/constants.dart';
+
 class FullScreenImage extends StatelessWidget {
   final String imagePath;
 
@@ -22,8 +24,7 @@ class FullScreenImage extends StatelessWidget {
           panEnabled: true,
           minScale: 1.0,
           maxScale: 4.0,
-          child: Image.file(
-            File(imagePath),
+          child: Image.network("${Constants.baseUrl}${imagePath.replaceAll('\\', '/')}",
             fit: BoxFit.contain,
           ),
         ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/models/Comment.dart';
 import 'package:medishareflutter/models/Post.dart';
-import 'package:medishareflutter/viewModels/PostViewModel.dart';
+import 'package:medishareflutter/models/PostResponse.dart';
+import 'package:medishareflutter/utils/constants.dart';
+import 'package:medishareflutter/viewModels/post_view_model.dart';
 import 'dart:io';
 
 import 'package:medishareflutter/views/full_screen_image.dart'; // Import for file handling
@@ -15,11 +17,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<Post>> _postsFuture;
+  late Future<List<PostResponse>> _postsFuture2;
 
   @override
   void initState() {
     super.initState();
-    _postsFuture = widget.postViewModel.fetchPosts(); // Fetch posts
+    _postsFuture = widget.postViewModel.fetchPostss(); // Fetch posts
+    _postsFuture2 = widget.postViewModel.fetchPosts(); // Fetch posts
   }
 
   @override
@@ -71,8 +75,8 @@ class _HomePageState extends State<HomePage> {
               // Expanded ListView
             ),
             Expanded(
-              child: FutureBuilder<List<Post>>(
-                future: _postsFuture,
+              child: FutureBuilder<List<PostResponse>>(
+                future: _postsFuture2,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -87,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     itemCount: posts.length,
                     itemBuilder: (context, index) {
                       final post = posts[index];
-                      return PostCard(post: post);
+                      return PostCard(postres: post);
                     },
                   );
                 },
@@ -101,9 +105,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class PostCard extends StatefulWidget {
-  final Post post;
+  final PostResponse postres;
 
-  const PostCard({Key? key, required this.post}) : super(key: key);
+  const PostCard({Key? key, required this.postres}) : super(key: key);
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -166,7 +170,7 @@ class _PostCardState extends State<PostCard> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              widget.post.description,
+              widget.postres.content,
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
@@ -183,12 +187,12 @@ class _PostCardState extends State<PostCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        FullScreenImage(imagePath: widget.post.image),
+                        FullScreenImage(imagePath: widget.postres.image),
                   ),
                 );
               },
-              child: Image.file(
-                File(widget.post.image),
+              child: Image.network(
+                        "${Constants.baseUrl}${widget.postres.image.replaceAll('\\', '/')}",
                 fit: BoxFit.cover,
                 height: 200,
                 width: double.infinity,
@@ -231,7 +235,7 @@ class _PostCardState extends State<PostCard> {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: widget.post.comments.map((comment) {
+                children: [].map((comment) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6.0),
                     child: Row(
@@ -275,19 +279,19 @@ class _PostCardState extends State<PostCard> {
                     icon: Icon(Icons.send, color: Color(0xFF113155)),
                     onPressed: () async {
                       if (_commentController.text.isNotEmpty) {
-                        final Comment newComment = Comment(
-                          postId: widget.post.id!,
-                          content: _commentController.text,
-                        );
+                        //final Comment newComment = Comment(
+                          //postId: widget.postres.id,
+                          //content: _commentController.text,
+                       // );
 
-                        setState(() {
-                          widget.post.comments.add(newComment);
-                        });
+                        //setState(() {
+                          //widget.postres.comments.add(newComment);
+                        //});
 
                         _commentController.clear();
 
                         try {
-                          await postViewModel.saveCommentToDatabase(newComment);
+                          //await postViewModel.saveCommentToDatabase(newComment);
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

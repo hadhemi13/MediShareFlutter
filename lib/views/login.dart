@@ -4,7 +4,6 @@ import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/views/forgotpassword.dart';
 import 'package:medishareflutter/views/signup.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override

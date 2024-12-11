@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
+import 'package:medishareflutter/viewModels/post_view_model.dart';
 import 'package:medishareflutter/views/FilesPage.dart';
 import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/ProfileScreen.dart';
@@ -11,10 +12,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter environment is initialized.
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-  runApp( ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()), // Provide LoginViewModel
+        ChangeNotifierProvider(create: (_) => PostViewModel()), // Provide PostViewModel
+      ],
       child: MyApp(initialIsLoggedIn: isLoggedIn),
-    ),);
+    ),
+  );
 }
 
 /// Main application widget
@@ -68,7 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     HomePage(),
-    const FilesPage(),
+    
+    FilesPage(),
     const UploadImage(), // Passe directement updateIndex
     const ProfileView(),
   ];
