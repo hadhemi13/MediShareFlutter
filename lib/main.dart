@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:medishareflutter/services/patient/views/AllrecommandationPatient.dart';
+import 'package:medishareflutter/services/patient/views/HomePatient.dart';
+import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
+import 'package:medishareflutter/services/patient/views/ListImagePatient.dart';
+import 'package:medishareflutter/services/patient/views/uploadImagePatient.dart';
 import 'package:medishareflutter/views/FilesPage.dart';
 import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/ProfileScreen.dart';
@@ -36,13 +41,14 @@ late bool isLoggedIn;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+  debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
       home: isLoggedIn 
-          ? MyHomePage() 
+          ? HomeScreenMain1() 
           : LoginScreen(), 
     );
   }
@@ -62,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   final List<Widget> _pages = [
-    HomePage(),
+    HomeScreenMain1(),
     const FilesPage(),
     const UploadImage(), // Passe directement updateIndex
     const ProfileView(),
@@ -82,11 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: const Color.fromARGB(255, 220, 13, 13),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+            backgroundColor: Colors.black
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.folder),
