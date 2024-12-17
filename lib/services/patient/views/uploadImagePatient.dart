@@ -85,7 +85,7 @@ class _UploadAndAnalyzeScreenState extends State<UploadAndAnalyzeScreen> {
           children: [
             _selectedImage == null
                 ? Text('No image selected.')
-                : Image.file(File(_selectedImage!.path), height: 200),
+                : Image.file(File(_selectedImage!.path), height: 100),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
