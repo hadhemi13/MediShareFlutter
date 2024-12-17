@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:medishareflutter/views/admin/map_screen.dart';
+import 'package:medishareflutter/views/admin/users_screen.dart';
 import 'package:medishareflutter/views/auth/ProfileScreen.dart';
-import 'package:medishareflutter/views/radiologue/FilesPage.dart';
-import 'package:medishareflutter/views/radiologue/HomePage.dart';
-import 'package:medishareflutter/views/radiologue/UploadImage.dart';
+
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -14,8 +14,8 @@ class AdminHomePage extends StatefulWidget {
 class _AdminHomePageState extends State<AdminHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
-    HomePage(),
-   
+    MapScreen(),
+     UsersScreen(),
     const ProfileView(),
   ];
 
@@ -41,12 +41,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.folder),
-            label: 'Files',
+            label: 'users',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.upload_file),
-            label: 'Upload Image',
-          ),
+          
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',

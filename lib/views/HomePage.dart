@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/models/Comment.dart';
+import 'package:medishareflutter/models/Post.dart';
+import 'package:medishareflutter/models/PostResponse.dart';
 import 'package:medishareflutter/models/displaying_posts.dart';
 import 'package:medishareflutter/utils/constants.dart';
-import 'package:medishareflutter/viewModels/comment_view_model.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
-import 'package:medishareflutter/views/radiologue/full_screen_image.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import for file handling
+import 'dart:io';
+
+import 'package:medishareflutter/views/full_screen_image.dart'; // Import for file handling
 
 class HomePage extends StatefulWidget {
   final PostViewModel postViewModel = PostViewModel();
@@ -15,13 +17,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //late Future<List<Post>> _postsFuture;
+  late Future<List<Post>> _postsFuture;
   late Future<List<DisplayingPosts>> _postsFuture2;
 
   @override
   void initState() {
     super.initState();
-    // _postsFuture = widget.postViewModel.fetchPostss(); // Fetch posts
+    //_postsFuture = widget.postViewModel.fetchPostss(); // Fetch posts
     _postsFuture2 = widget.postViewModel.fetchPosts(); // Fetch posts
   }
 
@@ -30,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("MediShare"),
+          title: Text("MediShare"),
           centerTitle: true,
         ),
         body: Column(
@@ -38,8 +40,8 @@ class _HomePageState extends State<HomePage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child:
-              // Row of buttons
-              Padding(
+                  // Row of buttons
+                  Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -48,25 +50,25 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         // Handle 'Recent' button logic
                       },
-                      child: const Text('Recent'),
+                      child: Text('Recent'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         // Handle 'Trending' button logic
                       },
-                      child: const Text('Trending'),
+                      child: Text('Trending'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         // Handle 'Best' button logic
                       },
-                      child: const Text('Best'),
+                      child: Text('Best'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         // Handle 'Risking' button logic
                       },
-                      child: const Text('Risking'),
+                      child: Text('Risking'),
                     ),
                   ],
                 ),
@@ -78,11 +80,11 @@ class _HomePageState extends State<HomePage> {
                 future: _postsFuture2,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No posts available.'));
+                    return Center(child: Text('No posts available.'));
                   }
 
                   final posts = snapshot.data!;
@@ -90,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                     itemCount: posts.length,
                     itemBuilder: (context, index) {
                       final post = posts[index];
-                      return PostCard(postres: post);
+                      return PostCard(postres: post.post);
                     },
                   );
                 },
@@ -104,7 +106,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class PostCard extends StatefulWidget {
-  final DisplayingPosts postres;
+  final PostResponse postres;
 
   const PostCard({Key? key, required this.postres}) : super(key: key);
 
@@ -115,13 +117,12 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool _showComments = false;
   final PostViewModel postViewModel = PostViewModel();
-  final CommentViewModel commentViewModel = CommentViewModel();
   final TextEditingController _commentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       elevation: 5.0,
       shadowColor: Colors.grey.withOpacity(0.5),
@@ -134,27 +135,26 @@ class _PostCardState extends State<PostCard> {
             child: Row(
               children: [
                 // Image from assets
-                const CircleAvatar(
-                  backgroundImage: AssetImage('assets/profile.png'),
+                CircleAvatar(
+                  backgroundImage:
+                      AssetImage('assets/images/profile_placeholder.png'),
                   radius: 20.0,
                 ),
-                const SizedBox(width: 12.0),
+                SizedBox(width: 12.0),
                 // Name and hour
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.postres.post
-                            .author, // Replace with dynamic name if needed
-                        style: const TextStyle(
+                        'John Doe', // Replace with dynamic name if needed
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.0,
                         ),
                       ),
                       Text(
-                        widget.postres.post
-                            .timeAgo, // Replace with dynamic time if needed
+                        '2 hours ago', // Replace with dynamic time if needed
                         style: TextStyle(
                           fontWeight: FontWeight.w300,
                           fontSize: 14.0,
@@ -171,7 +171,7 @@ class _PostCardState extends State<PostCard> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              widget.postres.post.content,
+              widget.postres.content,
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
@@ -181,20 +181,19 @@ class _PostCardState extends State<PostCard> {
           ),
 
           ClipRRect(
-            borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(15.0)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        FullScreenImage(imagePath: widget.postres.post.image),
+                        FullScreenImage(imagePath: widget.postres.image),
                   ),
                 );
               },
               child: Image.network(
-                "${Constants.baseUrl}${widget.postres.post.image.replaceAll('\\', '/')}",
+                        "${Constants.baseUrl}${widget.postres.image.replaceAll('\\', '/')}",
                 fit: BoxFit.cover,
                 height: 200,
                 width: double.infinity,
@@ -207,41 +206,19 @@ class _PostCardState extends State<PostCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(width: 0.2),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      final userId = prefs.getString('userId');
-                      final statusPost = await postViewModel.incrementUpvotes(
-                          widget.postres.post.id, userId!);
-                      setState(() {
-                        if (statusPost && widget.postres.post.statepost) {
-                          widget.postres.post.statepost =
-                          false; // statusPost is now a resolved bool
-                          widget.postres.post.upvotes--;
-                        } else if (statusPost) {
-                          widget.postres.post.statepost =
-                          true; // statusPost is now a resolved bool
-                          widget.postres.post.upvotes++;
-                        }
-                      });
-                    },
-                    child: Icon(
-                      Icons.arrow_upward,
-                      color: widget.postres.post.statepost
-                          ? Colors.blue[800]
-                          : Colors.grey[700],
-                    ),
-                  ),
-                  Text("${widget.postres.post.upvotes}"),
-                ],
+              Container(
+                child: Row(
+                  children: [
+                    Icon(Icons.arrow_upward, color: Colors.grey[700]),
+                    Text("16"),
+                  ],
+                ),
               ),
               const SizedBox(width: 0.2),
               IconButton(
                 icon: Icon(
                   _showComments ? Icons.comment_bank : Icons.comment,
-                  color: const Color(0xFF113155),
+                  color: Color(0xFF113155),
                 ),
                 onPressed: () {
                   setState(() {
@@ -259,18 +236,17 @@ class _PostCardState extends State<PostCard> {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: widget.postres.comments.map((comment) {
+                children: [].map((comment) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.person,
-                            color: Colors.grey, size: 20.0),
-                        const SizedBox(width: 8.0),
+                        Icon(Icons.person, color: Colors.grey, size: 20.0),
+                        SizedBox(width: 8.0),
                         Expanded(
                           child: Text(
-                            comment.comment,
+                            comment.content,
                             style: TextStyle(
                                 fontSize: 14.0, color: Colors.grey[700]),
                           ),
@@ -299,26 +275,24 @@ class _PostCardState extends State<PostCard> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10.0),
+                  SizedBox(width: 10.0),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Color(0xFF113155)),
+                    icon: Icon(Icons.send, color: Color(0xFF113155)),
                     onPressed: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      final userId = prefs.getString("userId")!;
                       if (_commentController.text.isNotEmpty) {
-                        final Comment newComment = Comment(
-                          postId: widget.postres.post.id,
-                          comment: _commentController.text,
-                          userId: userId,
-                        );
+                        //final Comment newComment = Comment(
+                          //postId: widget.postres.id,
+                          //content: _commentController.text,
+                       // );
+
+                        //setState(() {
+                          //widget.postres.comments.add(newComment);
+                        //});
+
+                        _commentController.clear();
 
                         try {
-                          await commentViewModel.createComment(newComment);
-                          setState(() {
-                            widget.postres.comments.add(newComment);
-                          });
-
-                          _commentController.clear();
+                          //await postViewModel.saveCommentToDatabase(newComment);
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

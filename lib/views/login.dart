@@ -3,10 +3,9 @@ import 'package:medishareflutter/main.dart';
 import 'package:medishareflutter/services/patient/views/HomePatient.dart';
 import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
-import 'package:medishareflutter/views/admin/admin_home_page.dart';
 import 'package:medishareflutter/views/auth/forgotpassword.dart';
-import 'package:medishareflutter/views/auth/signup.dart';
 import 'package:medishareflutter/views/radiologue/my_home_page.dart';
+import 'package:medishareflutter/views/signup.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -240,12 +239,14 @@ class LoginScreenState extends State<LoginScreen> {
                                     Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const MyHomePage()),
+                                    builder: (context) => MyHomePage()),
                                 (route) => false,
                               );
                                 }
-                                else if (userRole == "patient")
+                                else
                                 {
+                                  
+
                                     Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
@@ -253,14 +254,6 @@ class LoginScreenState extends State<LoginScreen> {
                                 (route) => false,
                               );
 
-                                } else 
-                                {
-                                   Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AdminHomePage()),
-                                (route) => false,
-                              );
                                 }
                                 
 

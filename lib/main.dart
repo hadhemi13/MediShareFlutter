@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
+import 'package:medishareflutter/viewmodels/clinique_viewmodel.dart';
+import 'package:medishareflutter/views/admin/admin_home_page.dart';
 import 'package:medishareflutter/views/auth/login.dart';
 import 'package:medishareflutter/views/radiologue/my_home_page.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +17,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => CliniqueViewModel()),
+
         ChangeNotifierProvider(create: (_) => LoginViewModel()), // Provide LoginViewModel
         ChangeNotifierProvider(create: (_) => PostViewModel()), // Provide PostViewModel
       ],
@@ -57,7 +61,7 @@ late String userRole;
           useMaterial3: true,
         ),
       home: isLoggedIn
-          ? (userRole == "patient" ?const HomeScreenMain1(): userRole == "radiologist"?const MyHomePage():LoginScreen())
+          ? (userRole == "patient" ?const HomeScreenMain1(): userRole == "radiologist"?const MyHomePage():AdminHomePage())
           : LoginScreen(),
 
     );
