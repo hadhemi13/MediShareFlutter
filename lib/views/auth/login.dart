@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/main.dart';
+import 'package:medishareflutter/services/patient/views/HomePatient.dart';
+import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
-import 'package:medishareflutter/views/forgotpassword.dart';
-import 'package:medishareflutter/views/signup.dart';
+import 'package:medishareflutter/views/auth/forgotpassword.dart';
+import 'package:medishareflutter/views/auth/signup.dart';
+import 'package:medishareflutter/views/radiologue/my_home_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -226,12 +230,35 @@ class LoginScreenState extends State<LoginScreen> {
                               passwordController.text.trim(),
                             );
                             if (success) {
-                              Navigator.pushAndRemoveUntil(
+                                 final prefs = await SharedPreferences.getInstance();
+
+                                  var userRole =  await prefs.getString('userRole');
+                                if(userRole == "radiologist")
+                                {
+
+                                    Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MyHomePage()),
+                                    builder: (context) => const MyHomePage()),
                                 (route) => false,
                               );
+                                }
+                                else
+                                {
+                                  
+
+                                    Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomeScreenMain1()),
+                                (route) => false,
+                              );
+
+                                }
+                                
+
+
+                            
                             } else {
                               showDialog(
                                 context: context,

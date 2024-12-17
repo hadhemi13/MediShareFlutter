@@ -34,6 +34,8 @@ class LoginViewModel extends ChangeNotifier {
         await prefs.setString('userEmail', data['userEmail']);
         await prefs.setString('accessToken', data['accessToken']);
         await prefs.setString('refreshToken', data['refreshToken']);
+        await prefs.setString('userRole', data['userRole']);
+
         // Parse token or user data if needed
         // final data = jsonDecode(response.body);
         _setLoading(false);

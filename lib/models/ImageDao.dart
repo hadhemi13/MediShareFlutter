@@ -1,4 +1,3 @@
-  import 'package:medishareflutter/models/Comment.dart';
 
   class ImageDao {
     final int? id;

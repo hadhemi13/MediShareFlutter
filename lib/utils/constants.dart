@@ -19,12 +19,7 @@ class Constants {
   static const String createPost = 'post';
   static const String likePost = 'post/inc/upvotes';
   static const String fetchPosts = 'post/posts';
-  // Clinique-specific endpoints (add more as needed)
-  static const String fetchCliniques = 'cliniques';
-  static const String addClinic = 'cliniques/create';  // This should be correct
-  static const String deleteClinique = 'cliniques'; // Use the base 'cliniques' endpoint with the DELETE method
-  static const String updateClinique = 'cliniques'; // Use the base 'cliniques' endpoint with the PUT method
-
+  static const String fetchAllComments = 'comment';
 }
 
 class ResponseMessage {

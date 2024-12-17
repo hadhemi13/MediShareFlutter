@@ -6,6 +6,7 @@ class AuthService {
   final String baseUrl = Constants.baseUrl; // Remplacez par l'URL de votre backend
 
   Future<http.Response> signUp(Map<String, dynamic> signupData) async {
+    print("signup data : $signupData ...");
     final url = Uri.parse('$baseUrl${Constants.signup}');
     final response = await http.post(
       url,
@@ -23,6 +24,8 @@ class AuthService {
 
   Future<http.Response> login(Map<String, dynamic> credentials) async {
     final url = Uri.parse('$baseUrl${Constants.login}');
+    print(url);
+    print("login ...");
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

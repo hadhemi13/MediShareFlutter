@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/views/changepass.dart';
+import 'package:medishareflutter/views/auth/changepass.dart';
 
 class OtpConfirmScreen extends StatefulWidget {
   @override

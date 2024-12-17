@@ -1,17 +1,18 @@
- /* class Comment {
+  class Comment {
     final String? id;
+    final String userId;
+    final String comment;
     final String postId;
-    final String content;
 
-    Comment({this.id, required this.postId, required this.content});
+    Comment({ this.id, required this.postId, required this.comment, required this.userId});
 
     // From JSON
     factory Comment.fromJson(Map<String, dynamic> json) {
       return Comment(
-          id: json['id'], postId: json['postId'],content: json['content']);
+          id: json['_id'], postId: json['post'],comment: json['comment'], userId: json['user']);
     }
 
     // To JSON
     Map<String, dynamic> toJson() =>
-        {'id': id, 'postId': postId, 'content': content};
-  }*/
+        {'post': postId, 'comment': comment, 'user': userId};
+  }

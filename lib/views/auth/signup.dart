@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/views/confirmmail.dart';
-import 'package:medishareflutter/views/login.dart';
-import 'package:medishareflutter/views/terms.dart';
+import 'package:medishareflutter/views/auth/confirmmail.dart';
+import 'package:medishareflutter/views/auth/login.dart';
+import 'package:medishareflutter/views/auth/terms.dart';
+import 'package:medishareflutter/services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -18,12 +19,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isPasswordValid = true;
   bool isConfirmPasswordValid = true;
   bool isUsernameValid = true;
+  bool isRadioligist = false;
   final TextEditingController userNameController = TextEditingController();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
-
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   String generatedPassword = '';
   String emailError = '';
@@ -33,11 +35,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Method to generate a secure password
   String generateSecurePassword() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&*()_-+=<>?';
+    const characters =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&*()_-+=<>?';
     Random random = Random();
-    String password = List.generate(12, (index) => characters[random.nextInt(characters.length)]).join();
+    String password = List.generate(
+        12, (index) => characters[random.nextInt(characters.length)]).join();
     return password;
   }
+
   void generateSecurePasswordAndFill() {
     setState(() {
       generatedPassword = generateSecurePassword();
@@ -51,15 +56,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Generate Secure Password'),
-          content: Text('Would you like to generate a secure password for your account?'),
+          title: const Text('Generate Secure Password'),
+          content: const Text(
+              'Would you like to generate a secure password for your account?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 // Cancel action: Close the dialog
                 Navigator.of(context).pop();
               },
-              child: Text('No, I\'ll enter my own'),
+              child: const Text('No, I\'ll enter my own'),
             ),
             TextButton(
               onPressed: () {
@@ -67,7 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 generateSecurePasswordAndFill();
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Yes, generate one'),
+              child: const Text('Yes, generate one'),
             ),
           ],
         );
@@ -78,14 +84,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _openTermsAndConditions(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TermsAndConditionsPage(onAccept: () {
-        // Once terms are accepted, check the checkbox
-        setState(() {
-          isTermsChecked = true;
-        });
-      })),
+      MaterialPageRoute(
+          builder: (context) => TermsAndConditionsPage(onAccept: () {
+                // Once terms are accepted, check the checkbox
+                setState(() {
+                  isTermsChecked = true;
+                });
+              })),
     );
   }
+
   void validateInput() {
     setState(() {
       // Reset error messages
@@ -103,7 +111,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (emailController.text.isEmpty) {
         isEmailValid = false;
         emailError = 'Email is required.';
-      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
+      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+          .hasMatch(emailController.text)) {
         isEmailValid = false;
         emailError = 'Please enter a valid email address: example@example.com';
       }
@@ -121,9 +130,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (passwordController.text.isEmpty) {
         isPasswordValid = false;
         passwordError = 'Password is required.';
-      } else if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])').hasMatch(passwordController.text)) {
+      } else if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])')
+          .hasMatch(passwordController.text)) {
         isPasswordValid = false;
-        passwordError = 'Password must contain an uppercase letter, a lowercase letter, a digit, and a special character.';
+        passwordError =
+            'Password must contain an uppercase letter, a lowercase letter, a digit, and a special character.';
       } else if (passwordController.text.length < 6) {
         isPasswordValid = false;
         passwordError = 'Password must be at least 6 characters long.';
@@ -141,19 +152,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: true,  // Ensures the layout adjusts when the keyboard opens
-        body: SingleChildScrollView(  // Make the body scrollable when keyboard appears
+        resizeToAvoidBottomInset:
+            true, // Ensures the layout adjusts when the keyboard opens
+        body: SingleChildScrollView(
+          // Make the body scrollable when keyboard appears
           child: Column(
             children: [
               // Green box with a horizontal wave
               ClipPath(
-      
                 clipper: HorizontalWaveClipper(),
                 child: Container(
-                  height: MediaQuery.of(context).size.height * 0.30,  // Reduced height from 0.4 to 0.25
-                  decoration: BoxDecoration(
+                  height: MediaQuery.of(context).size.height *
+                      0.30, // Reduced height from 0.4 to 0.25
+                  decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.white, Color(0xFF90CAF9)], // White to Light Blue
+                      colors: [
+                        Colors.white,
+                        Color(0xFF90CAF9)
+                      ], // White to Light Blue
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -167,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 100, // Adjust the size as needed
                           width: 100,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -179,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
+                    const Center(
                       child: Text(
                         "Sign Up",
                         style: TextStyle(
@@ -189,22 +205,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextField(
                       controller: userNameController,
-      
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         hintText: "User Name",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Default border color
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Focused border color
                             width: 1, // You can adjust the border width
                           ),
@@ -214,23 +229,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (!isUsernameValid)
                       Text(
                         usernameError,
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email),
+                        prefixIcon: const Icon(Icons.email),
                         hintText: "Email",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Default border color
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Focused border color
                             width: 1, // You can adjust the border width
                           ),
@@ -240,25 +255,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (!isEmailValid)
                       Text(
                         emailError,
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
-      
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: passwordController,
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                         hintText: "Password",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Default border color
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Focused border color
                             width: 1, // You can adjust the border width
                           ),
@@ -268,7 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Color(0xFF113155),
+                            color: const Color(0xFF113155),
                           ),
                           onPressed: () {
                             setState(() {
@@ -287,10 +301,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         passwordError,
                         style: TextStyle(color: Colors.red),
                       ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: confirmPasswordController,
-      
                       obscureText: !_isConfirmPasswordVisible,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock),
@@ -317,7 +330,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
                             });
                           },
                         ),
@@ -328,7 +342,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         confirmPasswordError,
                         style: TextStyle(color: Colors.red),
                       ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
+
+
+
+
+
+
+
+
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Are you radiologist?",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF113155),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Switch(
+                          value:
+                              isRadioligist, // This boolean value should be defined in your state
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              isRadioligist =
+                                  newValue; // Update the state with the new value
+                            });
+                          },
+                          activeColor:
+                              const Color(0xFF90CAF9), // Customize active color
+                          inactiveThumbColor:
+                              Colors.grey, // Customize inactive thumb color
+                          inactiveTrackColor: Colors
+                              .grey[300], // Customize inactive track color
+                        ),
+                      ],
+                    ),
+
+
+
+
+
+
+
+
+
+
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Checkbox(
@@ -337,52 +400,81 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             setState(() {
                               isTermsChecked = value ?? false;
                             });
-      
+
                             // If checkbox is checked, open Terms and Conditions page
                             if (isTermsChecked) {
                               _openTermsAndConditions(context);
                             }
                           },
                           fillColor: MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
+                            (Set<MaterialState> states) {
                               if (states.contains(MaterialState.selected)) {
-                                return const Color(0xFF90CAF9); // Background color when checked
+                                return const Color(
+                                    0xFF90CAF9); // Background color when checked
                               }
-                              return Colors.transparent; // Background color when unchecked
+                              return Colors
+                                  .transparent; // Background color when unchecked
                             },
                           ),
                         ),
                         Text("Accept terms & conditions"),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     // Gradient Button
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // First, check if the terms are checked
                         if (isTermsChecked) {
                           // Call the validation function
                           validateInput();
-      
+
                           // If the validation passes, proceed to the login screen
-                          if (isEmailValid && isPasswordValid && isConfirmPasswordValid && isUsernameValid) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => confirmMailScreen()),
-                            );
+                          if (isEmailValid &&
+                              isPasswordValid &&
+                              isConfirmPasswordValid &&
+                              isUsernameValid) {
+                            // Prepare the signup data
+                            Map<String, dynamic> signupData = {
+                              'email': emailController.text,
+                              'password': passwordController.text,
+                              'name': userNameController.text,
+                              'role': isRadioligist? "radiologist":"patient"
+                            };
+                            AuthService a = new AuthService();
+                            // Call the signUp function
+                            final response = await a.signUp(signupData);
+
+                            // Handle the response
+                            if (response.statusCode == 201) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => confirmMailScreen()),
+                              );
+                            } else {
+                              // Show error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Sign up failed: ${response.body}')),
+                              );
+                            }
                           }
                         } else {
                           // Show an error message if terms are not checked
                           // You could display a Snackbar, alert dialog, or other method to notify the user
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("You must agree to the terms and conditions."),
+                              content: Text(
+                                  "You must agree to the terms and conditions."),
                             ),
                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent, // Make the background transparent
+                        backgroundColor: Colors
+                            .transparent, // Make the background transparent
                         minimumSize: Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -404,8 +496,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               Color(0x9990CAF9),
                               Color(0xFF90CAF9)
                             ], // White to Light Blue
-                            begin: Alignment.centerLeft,  // Start gradient from left
-                            end: Alignment.centerRight,   // End gradient at right
+                            begin: Alignment
+                                .centerLeft, // Start gradient from left
+                            end: Alignment.centerRight, // End gradient at right
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -422,13 +515,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Center(
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()),
                           );
                         },
                         child: Text(
@@ -447,6 +541,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
+
 class HorizontalWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -463,14 +558,14 @@ class HorizontalWaveClipper extends CustomClipper<Path> {
 
     // Create the first wave (right to middle)
     path.quadraticBezierTo(
-      size.width * 0.75, size.height,         // Control point
-      size.width * 0.5, size.height * 0.85,   // End of first wave
+      size.width * 0.75, size.height, // Control point
+      size.width * 0.5, size.height * 0.85, // End of first wave
     );
 
     // Create the second wave (middle to left)
     path.quadraticBezierTo(
-      size.width * 0.25, size.height * 0.7,   // Control point
-      0, size.height * 0.85,                 // End of second wave
+      size.width * 0.25, size.height * 0.7, // Control point
+      0, size.height * 0.85, // End of second wave
     );
 
     // Close the path by returning to the starting point at the top-left corner

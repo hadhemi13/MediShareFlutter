@@ -1,4 +1,3 @@
-import 'package:medishareflutter/models/Comment.dart';
 
 class Post {
   final int? id;

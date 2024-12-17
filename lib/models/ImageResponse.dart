@@ -1,5 +1,3 @@
-import 'package:medishareflutter/models/Comment.dart';
-
 class ImageResponse {
   final String id;
   final String imageName;

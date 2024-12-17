@@ -5,7 +5,7 @@ import 'package:medishareflutter/viewModels/ImageViewModel.dart';
 import 'package:medishareflutter/models/ImageDao.dart';
 import 'dart:io';
 
-import 'package:medishareflutter/views/FileDetailsPage.dart';
+import 'package:medishareflutter/views/radiologue/FileDetailsPage.dart';
 
 class FilesPage extends StatefulWidget {
   const FilesPage({super.key});
