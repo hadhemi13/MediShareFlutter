@@ -4,8 +4,9 @@ import 'package:medishareflutter/utils/constants.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
 class ImageListScreen1 extends StatefulWidget {
+  const ImageListScreen1({Key? key}) : super(key: key);
+
   @override
   _ImageListScreen1State createState() => _ImageListScreen1State();
 }
@@ -17,14 +18,18 @@ class _ImageListScreen1State extends State<ImageListScreen1> {
 
   @override
   void initState() {
-    print("_ImageListScreen1State init state ...");
     super.initState();
-    _fetchUserId().then((id) {
+    _fetchUserIdAndImages();
+  }
+
+  Future<void> _fetchUserIdAndImages() async {
+    try {
+      final id = await _fetchUserId();
       if (id.isNotEmpty) {
         setState(() {
           userId = id;
         });
-        _fetchImages(); // Fetch images only after the user ID is retrieved
+        await _fetchImages();
       } else {
         setState(() {
           _isLoading = false;
@@ -33,8 +38,16 @@ class _ImageListScreen1State extends State<ImageListScreen1> {
           SnackBar(content: Text('User ID not found. Please log in.')),
         );
       }
-    });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
+
 
   Future<String> _fetchUserId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -64,6 +77,22 @@ class _ImageListScreen1State extends State<ImageListScreen1> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to fetch images.')),
         );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       }
     } catch (e) {
       setState(() {
@@ -75,45 +104,68 @@ class _ImageListScreen1State extends State<ImageListScreen1> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Image List'),
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 60,
-                  decoration: BoxDecoration(color: Colors.blue),
-                  child: Center(
-                    child: Text(
-                      'Manage your documents easily',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                      ),
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Image List'),
+    ),
+    body: _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 60,
+                decoration: BoxDecoration(color: Colors.blue),
+                child: Center(
+                  child: Text(
+                    'Manage your documents easily',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _images.length,
-                    itemBuilder: (context, index) {
-                      final image = _images[index];
-                      return _buildImageItem(image);
-                    },
-                  ),
-                ),
-              ],
-            ),
-    );
-  }
+              ),
+              SizedBox(height: 16),
+              Expanded(
+                child: _images.isEmpty
+                    ? Center( // Show the error image when no images are available
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/imagelistnotfound-removebg-preview.png',
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(height: 16.0),
+                            Text(
+                              'No images available',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _images.length,
+                        itemBuilder: (context, index) {
+                          final image = _images[index];
+                          return _buildImageItem(image);
+                        },
+                      ),
+              ),
+            ],
+          ),
+  );
+}
+
 
   Widget _buildImageItem(dynamic image) {
     return Card(

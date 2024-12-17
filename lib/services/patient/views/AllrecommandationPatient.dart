@@ -51,6 +51,24 @@ class RecommendationsScreen extends StatelessWidget {
           } else if (userIdSnapshot.hasError) {
             return Center(child: Text('Error fetching user ID: ${userIdSnapshot.error}'));
           } else if (userIdSnapshot.hasData) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             final userId = userIdSnapshot.data!;
             return FutureBuilder<List<Map<String, dynamic>>>(
               future: _fetchRecommendations(userId),
@@ -59,8 +77,60 @@ class RecommendationsScreen extends StatelessWidget {
                   return Center(child: CircularProgressIndicator());
                 } else if (recommendationsSnapshot.hasError) {
                   return Center(child: Text('Error: ${recommendationsSnapshot.error}'));
-                } else if (recommendationsSnapshot.hasData) {
+                }
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                 else if (recommendationsSnapshot.hasData) {
                   final recommendations = recommendationsSnapshot.data!;
+if (recommendations.isEmpty) {
+    // Show error image when no recommendations are found
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/error_notfound.jpg',
+            height: 200,
+            width: 200,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'No recommendations available',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+
+
+
+
+
+
+
 
                   return ListView.builder(
                     padding: EdgeInsets.all(16.0),
@@ -129,6 +199,7 @@ class RecommendationsScreen extends StatelessWidget {
                     },
                   );
                 } else {
+
                   return Center(child: Text('No recommendations available'));
                 }
               },
