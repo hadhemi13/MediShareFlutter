@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:medishareflutter/models/ImageResponse.dart';
+import 'package:medishareflutter/utils/constants.dart';
 import 'package:medishareflutter/viewModels/ImageViewModel.dart';
 import 'package:medishareflutter/models/ImageDao.dart';
 import 'dart:io';
@@ -14,12 +16,16 @@ class FilesPage extends StatefulWidget {
 
 class _FilesPageState extends State<FilesPage> {
   final ImageViewModel _viewModel = ImageViewModel();
+  late Future<List<ImageResponse>> _imagesRes;
   late Future<List<ImageDao>> _images;
 
   @override
   void initState() {
     super.initState();
-    _images = _viewModel.getImages(); // Récupérer les images depuis SQLite
+    _imagesRes = _viewModel.getImages1();
+
+    _images = _viewModel.getImages();
+    print(_imagesRes);
   }
 
   @override
@@ -27,8 +33,8 @@ class _FilesPageState extends State<FilesPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: const Text('Files Page')),
-        body: FutureBuilder<List<ImageDao>>(
-          future: _images, // Récupérer la liste des images
+        body: FutureBuilder<List<ImageResponse>>(
+          future: _imagesRes, // Récupérer la liste des images
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -37,6 +43,7 @@ class _FilesPageState extends State<FilesPage> {
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(child: Text('Aucune image disponible.'));
             } else {
+            
               // Afficher les images sous forme de ListView.builder
               final images = snapshot.data!;
               return ListView.builder(
@@ -44,18 +51,19 @@ class _FilesPageState extends State<FilesPage> {
                 itemBuilder: (context, index) {
                   final image = images[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     elevation: 4,
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(10),
-                      leading: Image.file(
-                        File(image.path), // Affiche l'image depuis le fichier
+                      leading: Image.network(
+                        "${Constants.baseUrl}${image.imageName.replaceAll('\\', '/')}", // Affiche l'image depuis le fichier
                         width: 60,
                         height: 60,
                         fit: BoxFit.cover,
                       ),
                       title: Text(image.title),
-                      subtitle: Text(image.description),
+                      subtitle: Text(image.title),
                       trailing: Icon(Icons.more_vert),
                       onTap: () {
                         // Naviguer vers la page de détails du fichier

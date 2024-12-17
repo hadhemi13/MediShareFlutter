@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UploadAndAnalyzeScreen extends StatefulWidget {
   @override
@@ -23,6 +24,11 @@ class _UploadAndAnalyzeScreenState extends State<UploadAndAnalyzeScreen> {
     }
   }
 
+  Future<String> _fetchUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId') ?? ''; // Ensure a fallback value if userId is null
+  }
+
   Future<void> _uploadAndAnalyze() async {
     if (_selectedImage == null) return;
 
@@ -30,15 +36,23 @@ class _UploadAndAnalyzeScreenState extends State<UploadAndAnalyzeScreen> {
       _isLoading = true;
     });
 
-    final uri = Uri.parse('http://172.18.7.130:3000/files/upload');
-    final request = http.MultipartRequest('POST', uri)
-      ..fields['userId'] = '67475e3306c359da38b6b227' // Replace with actual user ID
-      ..files.add(await http.MultipartFile.fromPath('file', _selectedImage!.path));
-
     try {
+      final userId = await _fetchUserId(); // Await the userId fetch
+      if (userId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User ID not found. Please log in again.')),
+        );
+        return;
+      }
+
+      final uri = Uri.parse('http://172.18.7.130:3000/files/upload');
+      final request = http.MultipartRequest('POST', uri)
+        ..fields['userId'] = userId
+        ..files.add(await http.MultipartFile.fromPath('file', _selectedImage!.path));
+
       final response = await request.send();
 
-      if (response.statusCode == 200) {
+      if (response.contentLength !> 0) {
         final responseData = await response.stream.bytesToString();
         final jsonResponse = json.decode(responseData);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -70,7 +84,7 @@ class _UploadAndAnalyzeScreenState extends State<UploadAndAnalyzeScreen> {
           children: [
             _selectedImage == null
                 ? Text('No image selected.')
-                : Image.file(File(_selectedImage!.path)),
+                : Image.file(File(_selectedImage!.path), height: 200),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
@@ -79,7 +93,13 @@ class _UploadAndAnalyzeScreenState extends State<UploadAndAnalyzeScreen> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: _selectedImage != null && !_isLoading ? _uploadAndAnalyze : null,
-              child: _isLoading ? CircularProgressIndicator() : Text('Upload and Analyze'),
+              child: _isLoading
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text('Upload and Analyze'),
             ),
           ],
         ),

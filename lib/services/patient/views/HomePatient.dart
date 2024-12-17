@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:medishareflutter/services/patient/views/ListImagePatient.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 
 import 'package:medishareflutter/services/patient/views/AllrecommandationPatient.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class MyHomePagePatient extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -28,7 +28,11 @@ class _MyHomePageState extends State<MyHomePagePatient> {
   
 
   Future<String> _fetchUserId() async {
-    return "67475e3306c359da38b6b227"; // Replace with your user ID logic
+    final prefs = await SharedPreferences.getInstance();
+
+    var userId =  await prefs.getString('userId');
+    
+        return userId!; // Replace with your user ID logic
   }
 
   Future<List<Map<String, dynamic>>> _fetchRecommendations(String userId) async {
@@ -51,16 +55,7 @@ class _MyHomePageState extends State<MyHomePagePatient> {
     }
   }
 
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-@override
+ @override
 Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: Colors.grey[100],
@@ -162,105 +157,93 @@ Widget build(BuildContext context) {
               ],
             ),
             SizedBox(height: 8.0),
-            FutureBuilder<String>(
-              future: _fetchUserId(),
-              builder: (context, userIdSnapshot) {
-                if (userIdSnapshot.connectionState == ConnectionState.waiting) {
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: _fetchUserId().then((userId) => _fetchRecommendations(userId)),
+              builder: (context, recommendationsSnapshot) {
+                if (recommendationsSnapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
-                } else if (userIdSnapshot.hasError) {
-                  return Center(child: Text('Error fetching user ID'));
-                } else {
-                  return FutureBuilder<List<Map<String, dynamic>>>( 
-                    future: _fetchRecommendations(userIdSnapshot.data!),
-                    builder: (context, recommendationsSnapshot) {
-                      if (recommendationsSnapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (recommendationsSnapshot.hasError) {
-                        return Center(child: Text('Error: ${recommendationsSnapshot.error}'));
-                      } else if (recommendationsSnapshot.hasData) {
-                        final recommendations = recommendationsSnapshot.data!;
-                        final visibleRecommendations = recommendations.take(3).toList();
-                        return SizedBox(
-                          height: 150,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: visibleRecommendations.length,
-                            itemBuilder: (context, index) {
-                              final recommendation = visibleRecommendations[index];
-                              final imageUrl = 'http://172.18.7.130:3000/upload/${recommendation['imageUrl']}';
-                              final title = recommendation['title'];
-                              final content = recommendation['content'];
+                } else if (recommendationsSnapshot.hasError) {
+                  return Center(child: Text('Error: ${recommendationsSnapshot.error}'));
+                } else if (recommendationsSnapshot.hasData) {
+                  final recommendations = recommendationsSnapshot.data!;
+                  final visibleRecommendations = recommendations.take(3).toList();
+                  return SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: visibleRecommendations.length,
+                      itemBuilder: (context, index) {
+                        final recommendation = visibleRecommendations[index];
+                        final imageUrl =
+                            'http://172.18.7.130:3000/upload/${recommendation['imageUrl']}';
+                        final title = recommendation['title'];
+                        final content = recommendation['content'];
 
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => RecommendationDetailsScreen(
-                                        title: title,
-                                        imageUrl: imageUrl,
-                                        content: content,
-                                        id: '77754574575',
-                                      ),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecommendationDetailsScreen(
+                                  title: title,
+                                  imageUrl: imageUrl,
+                                  content: content,
+                                  id: '77754574575',
+                                ),
+                              ),
+                            );
+                          },
+                          child: SizedBox(
+                            height: 100, // Set a fixed height for the card
+                            width: 200,
+                            child: Card(
+                              elevation: 2,
+                              margin: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (imageUrl.isNotEmpty)
+                                    Container(
+                                      height: 65,
+                                      width: double.infinity,
+                                      child: Image.network(imageUrl, fit: BoxFit.cover),
                                     ),
-                                  );
-                                },
-                                
-                                child: SizedBox(
-                                    height: 100,  // Set a fixed height for the card
-
-                                  width: 200,
-                                  child: Card(
-                                    elevation: 2,
-                                    margin: EdgeInsets.symmetric(horizontal: 8.0),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        if (imageUrl.isNotEmpty)
-                                          Container(
-                                            height: 65,
-                                            width: double.infinity,
-                                            child: Image.network(imageUrl, fit: BoxFit.cover),
+                                        Text(
+                                          title,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
                                           ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                title,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              SizedBox(height: 1.0),
-                                              Text(
-                                                content.length > 50
-                                                    ? content.substring(0, 50) + '...'
-                                                    : content,
-                                                style: TextStyle(color: Colors.grey[600]),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        SizedBox(height: 1.0),
+                                        Text(
+                                          content.length > 50
+                                              ? content.substring(0, 50) + '...'
+                                              : content,
+                                          style: TextStyle(color: Colors.grey[600]),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                              );
-                            },
+                                ],
+                              ),
+                            ),
                           ),
                         );
-                      } else {
-                           return Center(child: Text('No recommendations available'));
-                      }
-                    },
+                      },
+                    ),
                   );
+                } else {
+                  return Center(child: Text('No recommendations available'));
                 }
               },
             ),
@@ -268,14 +251,13 @@ Widget build(BuildContext context) {
         ),
       ),
     ),
-   
   );
 }
 
   Widget _buildClinicCard(BuildContext context, String name, String imagePath, String url,
       String openTime, String closeTime) {
     return GestureDetector(
-      onTap: () => _launchUrl(url),
+      onTap: () => print("button url tapped"),
       child: SizedBox(
         height: 160,
         width: 180,

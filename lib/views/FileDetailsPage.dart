@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/main.dart';
+import 'package:medishareflutter/models/ImageResponse.dart';
 import 'package:medishareflutter/models/Post.dart';
-import 'package:medishareflutter/viewModels/PostViewModel.dart';
-import 'package:medishareflutter/models/ImageDao.dart';
-import 'dart:io';
-
-import 'package:medishareflutter/views/HomePage.dart';
+import 'package:medishareflutter/utils/constants.dart';
+import 'package:medishareflutter/viewModels/post_view_model.dart';
 import 'package:medishareflutter/views/full_screen_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FileDetailsPage extends StatelessWidget {
-  final ImageDao image;
+  final ImageResponse image;
   final PostViewModel postViewModel = PostViewModel();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -34,12 +32,13 @@ class FileDetailsPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            FullScreenImage(imagePath: image.path),
+                            FullScreenImage(imagePath: image.imageName),
                       ),
                     );
                   },
-                  child: Image.file(
-                    File(image.path),
+                  child:Image.network(
+                        "${Constants.baseUrl}${image.imageName.replaceAll('\\', '/')}", // Affiche l'image depuis le fichier
+                        
                     width: double.infinity,
                     height: 250,
                     fit: BoxFit.cover,
@@ -54,7 +53,7 @@ class FileDetailsPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
                 Text(
-                  'Date: ${image.date}',
+                  'Date: "21/02/2024"',
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
@@ -77,8 +76,10 @@ class FileDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                
-                SizedBox(height: 20,),
+
+                SizedBox(
+                  height: 20,
+                ),
                 // Champ de texte pour la description du post
                 TextField(
                   controller: _descriptionController,
@@ -106,14 +107,18 @@ class FileDetailsPage extends StatelessWidget {
                   onPressed: () async {
                     // Récupérer la description
                     final newPost = Post(
-                      image: image.path, // Utiliser le chemin de l'image
+                      idImage: image.id,
+                      image: image.imageName, // Utiliser le chemin de l'image
                       description: _descriptionController
                           .text, // Pass description from the TextField
-                      comments: [], // Vous pouvez ajouter des commentaires plus tard
+                      //comments: [],
+                      title: 'Auto title', // Vous pouvez ajouter de plus tard
                     );
-
+                   final prefs = await SharedPreferences.getInstance();
+                   final userId = await prefs.getString('userId');
                     // Insérer le post dans la base de données
-                    await postViewModel.insertPost(newPost);
+                   // await postViewModel.insertPost(newPost);
+                    await postViewModel.createPost({"title":newPost.title,"imageId":newPost.idImage,"content":newPost.description,"userid":userId!,"subreddit":"dfsdfds"});
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(

@@ -1,6 +1,6 @@
-  class Comment {
-    final int? id;
-    final int postId;
+ /* class Comment {
+    final String? id;
+    final String postId;
     final String content;
 
     Comment({this.id, required this.postId, required this.content});
@@ -14,4 +14,4 @@
     // To JSON
     Map<String, dynamic> toJson() =>
         {'id': id, 'postId': postId, 'content': content};
-  }
+  }*/

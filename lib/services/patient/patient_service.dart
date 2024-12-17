@@ -3,15 +3,20 @@ import 'package:http/http.dart' as http;
 import 'package:medishareflutter/utils/constants.dart';
 import 'dart:io';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class ApiCommercials {
   final String baseUrl=Constants.baseUrl;
 
   
 
   Future<String> _fetchUserId() async {
-    return "67475e3306c359da38b6b227"; // Replace with your user ID logic
-  }
+    final prefs = await SharedPreferences.getInstance();
 
+    var userId =  await prefs.getString('userId');
+    
+        return userId !!; // Replace with your user ID logic
+  }
   Future<List<Map<String, dynamic>>> _fetchRecommendations(String userId) async {
     final url = Uri.parse('http://172.18.7.130:3000/ai/recommendations');
     final response = await http.post(
@@ -32,14 +37,7 @@ class ApiCommercials {
     }
   }
 
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+ 
 
 
 }

@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class RecommendationsScreen extends StatelessWidget {
   const RecommendationsScreen({Key? key}) : super(key: key);
 
+
+
   Future<String> _fetchUserId() async {
-    // Replace this with actual logic to retrieve the userId.
-    // Example: Retrieve it from shared preferences or secure storage.
-    return "67475e3306c359da38b6b227";
+    final prefs = await SharedPreferences.getInstance();
+
+    var userId =  await prefs.getString('userId');
+    
+        return userId !!; // Replace with your user ID logic
   }
 
   Future<List<Map<String, dynamic>>> _fetchRecommendations(String userId) async {

@@ -4,17 +4,28 @@ import 'package:medishareflutter/services/patient/views/HomePatient.dart';
 import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
 import 'package:medishareflutter/services/patient/views/ListImagePatient.dart';
 import 'package:medishareflutter/services/patient/views/uploadImagePatient.dart';
+import 'package:medishareflutter/viewModels/login_view_model.dart';
+import 'package:medishareflutter/viewModels/post_view_model.dart';
 import 'package:medishareflutter/views/FilesPage.dart';
 import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/ProfileScreen.dart';
 import 'package:medishareflutter/views/UploadImage.dart';
 import 'package:medishareflutter/views/login.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter environment is initialized.
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-  runApp( MyApp(initialIsLoggedIn: isLoggedIn));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()), // Provide LoginViewModel
+        ChangeNotifierProvider(create: (_) => PostViewModel()), // Provide PostViewModel
+      ],
+      child: MyApp(initialIsLoggedIn: isLoggedIn),
+    ),
+  );
 }
 
 /// Main application widget
@@ -68,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   final List<Widget> _pages = [
-    HomeScreenMain1(),
+    HomePage(),
     const FilesPage(),
     const UploadImage(), // Passe directement updateIndex
     const ProfileView(),
