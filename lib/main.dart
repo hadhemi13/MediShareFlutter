@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
+import 'package:medishareflutter/viewmodels/clinique_viewmodel.dart';
 import 'package:medishareflutter/views/FilesPage.dart';
 import 'package:medishareflutter/views/HomePage.dart';
 import 'package:medishareflutter/views/ProfileScreen.dart';
 import 'package:medishareflutter/views/UploadImage.dart';
 import 'package:medishareflutter/views/login.dart';
+import 'package:medishareflutter/views/map_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
@@ -15,6 +17,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => CliniqueViewModel()),
+
         ChangeNotifierProvider(create: (_) => LoginViewModel()), // Provide LoginViewModel
         ChangeNotifierProvider(create: (_) => PostViewModel()), // Provide PostViewModel
       ],
@@ -53,7 +57,7 @@ late bool isLoggedIn;
           useMaterial3: true,
         ),
       home: isLoggedIn 
-          ? MyHomePage() 
+          ? MapScreen()
           : LoginScreen(), 
     );
   }
