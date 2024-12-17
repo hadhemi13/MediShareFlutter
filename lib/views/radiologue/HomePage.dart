@@ -38,8 +38,8 @@ class _HomePageState extends State<HomePage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child:
-                  // Row of buttons
-                  Padding(
+              // Row of buttons
+              Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -182,7 +182,7 @@ class _PostCardState extends State<PostCard> {
 
           ClipRRect(
             borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(15.0)),
+            const BorderRadius.vertical(top: Radius.circular(15.0)),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -218,11 +218,11 @@ class _PostCardState extends State<PostCard> {
                       setState(() {
                         if (statusPost && widget.postres.post.statepost) {
                           widget.postres.post.statepost =
-                              false; // statusPost is now a resolved bool
+                          false; // statusPost is now a resolved bool
                           widget.postres.post.upvotes--;
                         } else if (statusPost) {
                           widget.postres.post.statepost =
-                              true; // statusPost is now a resolved bool
+                          true; // statusPost is now a resolved bool
                           widget.postres.post.upvotes++;
                         }
                       });

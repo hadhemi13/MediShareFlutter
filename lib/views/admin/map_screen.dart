@@ -467,6 +467,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:medishareflutter/models/clinique.dart';
 import 'package:medishareflutter/viewmodels/clinique_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -628,27 +629,41 @@ class _MapScreenState extends State<MapScreen> {
             ),
             TextButton(
               onPressed: () async {
-                const staticUserId = '6747c71d272632716f161c76';
+                // Retrieve the userId from SharedPreferences
+                final prefs = await SharedPreferences.getInstance();
+                final userId = prefs.getString('userId'); // Retrieve the userId from SharedPreferences
 
-                final clinique = Clinique(
-                  nom: nameController.text,
-                  latitude: position.latitude,
-                  longitude: position.longitude,
-                  createdBy: staticUserId,
-                );
+                if (userId != null) {
+                  // Create the Clinique object using the retrieved userId
+                  final clinique = Clinique(
+                    nom: nameController.text,
+                    latitude: position.latitude,
+                    longitude: position.longitude,
+                    createdBy: userId, // Use the dynamic userId here
+                  );
 
-                String result = await viewModel.addClinique(clinique);
+                  // Add the clinique via the viewModel
+                  String result = await viewModel.addClinique(clinique);
 
-                Navigator.pop(context);
+                  // Close the dialog
+                  Navigator.pop(context);
 
-                setState(() {
-                  selectedPosition = null;
-                });
+                  // Reset the selected position
+                  setState(() {
+                    selectedPosition = null;
+                  });
 
-                _showResultDialog(context, result);
+                  // Show the result dialog
+                  _showResultDialog(context, result);
+                } else {
+                  // Handle the case where userId is not found in SharedPreferences
+                  print('User ID not found');
+                  _showResultDialog(context, 'User ID not found');
+                }
               },
               child: Text("Ajouter"),
             ),
+
           ],
         );
       },
