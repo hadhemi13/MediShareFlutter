@@ -1,20 +1,29 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:medishareflutter/services/auth_service.dart';
 import 'package:medishareflutter/views/auth/login.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
+  final String resetToken;
+
+  const ChangePasswordScreen({Key? key, required this.resetToken})
+      : super(key: key);
+
   @override
   _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final AuthService _authService = AuthService();
+
   // Variables to toggle password visibility
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool isPasswordValid = true;
   bool isConfirmPasswordValid = true;
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   String passwordError = '';
   String confirmPasswordError = '';
   String generatedPassword = '';
@@ -30,9 +39,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   // Method to generate a secure password
   String generateSecurePassword() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&*()_-+=<>?';
+    const characters =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&*()_-+=<>?';
     Random random = Random();
-    String password = List.generate(12, (index) => characters[random.nextInt(characters.length)]).join();
+    String password = List.generate(
+        12, (index) => characters[random.nextInt(characters.length)]).join();
     return password;
   }
 
@@ -50,7 +61,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Generate Secure Password'),
-          content: Text('Would you like to generate a secure password for your account?'),
+          content: Text(
+              'Would you like to generate a secure password for your account?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -77,10 +89,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   void _showSuccessDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false,  // Prevents dismissal by tapping outside
+      barrierDismissible: false, // Prevents dismissal by tapping outside
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Center(child: Text("Password Updated")),
+          title: Center(child: Text("Password Updated")),
           content: Text("Your password has been updated successfully."),
           actions: <Widget>[
             TextButton(
@@ -107,7 +119,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         passwordError = 'Password is required';
       } else if (!isPasswordValidFormat(passwordController.text)) {
         isPasswordValid = false;
-        passwordError = 'Password must contain at least 8 characters, including uppercase, lowercase, a number, and a special character';
+        passwordError =
+            'Password must contain at least 8 characters, including uppercase, lowercase, a number, and a special character';
       } else {
         isPasswordValid = true;
         passwordError = '';
@@ -124,11 +137,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         isConfirmPasswordValid = true;
         confirmPasswordError = '';
       }
-
-      // If the form is valid, show success dialog
-      if (isPasswordValid && isConfirmPasswordValid) {
-        _showSuccessDialog();
-      }
     });
   }
 
@@ -141,7 +149,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(  // Use SingleChildScrollView to make the screen scrollable if content overflows
+          child: SingleChildScrollView(
+            // Use SingleChildScrollView to make the screen scrollable if content overflows
             child: Column(
               children: [
                 const SizedBox(height: 30), // Space after the image
@@ -149,8 +158,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 // Image with responsive width and height
                 Image.asset(
                   'assets/change.png', // Path to the image
-                  height: MediaQuery.of(context).size.height * 0.3, // Responsive height
-                  width: MediaQuery.of(context).size.width * 0.6,   // Responsive width
+                  height: MediaQuery.of(context).size.height *
+                      0.3, // Responsive height
+                  width: MediaQuery.of(context).size.width *
+                      0.6, // Responsive width
                 ),
                 const SizedBox(height: 30), // Space after the image
 
@@ -158,9 +169,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 const Text(
                   "Enter your new password",
                   style: TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,  // Center the text
+                  textAlign: TextAlign.center, // Center the text
                 ),
-                const SizedBox(height: 30), // Space between text and input fields
+                const SizedBox(
+                    height: 30), // Space between text and input fields
 
                 // Password TextField with validation
                 TextField(
@@ -237,7 +249,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
                         });
                       },
                     ),
@@ -252,16 +265,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                 // Change Password Button with validation
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
-                  height: MediaQuery.of(context).size.height * 0.06, // Responsive height
+                  width: MediaQuery.of(context).size.width *
+                      0.8, // 80% of screen width
+                  height: MediaQuery.of(context).size.height *
+                      0.06, // Responsive height
                   child: ElevatedButton(
-                    onPressed: () {
-                      validateForm();  // Validate form on button press
+                    onPressed: () async {
+                      validateForm(); // Validate form on button press
+                      if (isPasswordValid && isConfirmPasswordValid) {
+                        final response = await _authService.resetPassword(widget.resetToken, passwordController.text );
+                        if (response.statusCode == 200) {_showSuccessDialog();}
+                        
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF90CAF9), // Same background color
+                      backgroundColor:
+                          const Color(0xFF90CAF9), // Same background color
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30), // Rounded corners
+                        borderRadius:
+                            BorderRadius.circular(30), // Rounded corners
                       ),
                     ),
                     child: const Text(

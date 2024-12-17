@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:medishareflutter/services/auth_service.dart';
 import 'package:medishareflutter/views/auth/changepass.dart';
 
 class OtpConfirmScreen extends StatefulWidget {
@@ -9,7 +12,7 @@ class OtpConfirmScreen extends StatefulWidget {
 class _OtpConfirmScreenState extends State<OtpConfirmScreen> {
   // List to store the values of OTP fields
   List<String> otp = ["", "", "", "", "", ""];
-
+  final AuthService _authService = AuthService();
   // Error message visibility
   bool showError = false;
 
@@ -23,7 +26,8 @@ class _OtpConfirmScreenState extends State<OtpConfirmScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: const Text("OTP Confirmation")),
-        body: SingleChildScrollView( // Wrap content with SingleChildScrollView
+        body: SingleChildScrollView(
+          // Wrap content with SingleChildScrollView
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
@@ -93,13 +97,28 @@ class _OtpConfirmScreenState extends State<OtpConfirmScreen> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: MediaQuery.of(context).size.height * 0.06,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (isOtpComplete()) {
-                          // If OTP is complete, navigate to change password screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
-                          );
+                          final otpCode =
+                              "${otp[0]}${otp[1]}${otp[2]}${otp[3]}${otp[4]}${otp[5]}";
+
+                          final response =
+                              await _authService.verifyOtp(otpCode);
+                          if (response.statusCode == 201) {
+                            final Map<String, dynamic> responseData =
+                                jsonDecode(response.body);
+                            final String resetToken =
+                                responseData['resetToken'];
+
+                            // If OTP is complete, navigate to change password screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChangePasswordScreen(
+                                    resetToken: resetToken),
+                              ),
+                            );
+                          }
                         } else {
                           // Show error message if OTP is not complete
                           setState(() {

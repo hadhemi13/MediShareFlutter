@@ -2,11 +2,14 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medishareflutter/services/auth_service.dart';
 import 'package:medishareflutter/views/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+
+  // Load the name and email from SharedPreferences
 
   @override
   _ProfileViewState createState() => _ProfileViewState();
@@ -15,7 +18,6 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   File? _imageFile; // To store the picked image file
 
-  // Function to pick image from gallery or camera
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
     final pickedFile = await _picker.pickImage(source: source);
@@ -109,18 +111,18 @@ class _ProfileViewState extends State<ProfileView> {
                             ),
                             SizedBox(width: 16),
                             // Profile Name and Email
-                            Column(
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Guest',
+                                  "name",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  'Guest@esprit.tn',
+                                  "email",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey,
@@ -219,6 +221,8 @@ void _showEditPasswordDialog(BuildContext context) {
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+
+  final AuthService _authService = AuthService();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -389,10 +393,15 @@ void _showEditPasswordDialog(BuildContext context) {
                         child: const Text('Cancel'),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState?.validate() ?? false) {
+                            final response = await _authService.changePassword(
+                                oldPasswordController.text,
+                                newPasswordController.text);
+                            if (response.statusCode <= 205) {
+                              Navigator.of(context).pop();
+                            }
                             // Save password logic
-                            Navigator.of(context).pop();
                           }
                         },
                         child: const Text('Save'),
@@ -409,12 +418,21 @@ void _showEditPasswordDialog(BuildContext context) {
   );
 }
 
-void _showEditProfileDialog(BuildContext context) {
+void _showEditProfileDialog(BuildContext context) async {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   final _formKey = GlobalKey<FormState>();
-
+  final prefs = await SharedPreferences.getInstance();
+  final userName = prefs.getString("userName");
+  final userEmail = prefs.getString("userEmail");
+  if (userName != null) {
+    nameController.text = userName;
+  }
+  if (userEmail != null) {
+    emailController.text = userEmail;
+  }
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -473,10 +491,19 @@ void _showEditProfileDialog(BuildContext context) {
                     child: const Text('Cancel'),
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState?.validate() ?? false) {
+                        final response = await _authService.updateUserInfo(
+                            nameController.text, emailController.text);
+                        if (response.statusCode == 200 ||
+                            response.statusCode == 201) {
+                          await prefs.setString(
+                              "userEmail", emailController.text);
+                          await prefs.setString(
+                              "userName", nameController.text);
+                          Navigator.of(context).pop();
+                        }
                         // Save logic
-                        Navigator.of(context).pop();
                       }
                     },
                     child: const Text('Save'),

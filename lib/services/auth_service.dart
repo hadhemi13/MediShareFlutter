@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:medishareflutter/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = Constants.baseUrl; // Remplacez par l'URL de votre backend
+  final String baseUrl =
+      Constants.baseUrl; // Remplacez par l'URL de votre backend
 
   Future<http.Response> signUp(Map<String, dynamic> signupData) async {
     print("signup data : $signupData ...");
@@ -44,12 +46,18 @@ class AuthService {
     return response;
   }
 
-  Future<http.Response> changePassword(Map<String, dynamic> data) async {
+  Future<http.Response> changePassword(String oldPassword, String newPassword) async {
     final url = Uri.parse('$baseUrl${Constants.changePassword}');
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString("userId")!;
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
+      body: jsonEncode({
+        'oldPassword':oldPassword,
+        'newPassword': newPassword,
+        'userId': userId
+      }),
     );
     return response;
   }
@@ -74,12 +82,13 @@ class AuthService {
     return response;
   }
 
-  Future<http.Response> resetPassword(Map<String, dynamic> data) async {
+  Future<http.Response> resetPassword(
+      String resetToken, String newPassword) async {
     final url = Uri.parse('$baseUrl${Constants.resetPassword}');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
+      body: jsonEncode({'resetToken': resetToken, 'newPassword': newPassword}),
     );
     return response;
   }
@@ -90,12 +99,14 @@ class AuthService {
     return response;
   }
 
-  Future<http.Response> updateUserInfo(Map<String, dynamic> data) async {
+  Future<http.Response> updateUserInfo(String name, String email) async {
     final url = Uri.parse('$baseUrl${Constants.updateUser}');
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString("userId")!;
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
+      body: jsonEncode({'name': name, 'email': email, 'userId': userId}),
     );
     return response;
   }
