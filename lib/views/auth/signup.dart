@@ -6,7 +6,6 @@ import 'package:medishareflutter/views/auth/login.dart';
 import 'package:medishareflutter/views/auth/terms.dart';
 import 'package:medishareflutter/services/auth_service.dart';
 
-
 class SignUpScreen extends StatefulWidget {
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -20,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isPasswordValid = true;
   bool isConfirmPasswordValid = true;
   bool isUsernameValid = true;
+  bool isRadioligist = false;
   final TextEditingController userNameController = TextEditingController();
 
   final TextEditingController emailController = TextEditingController();
@@ -164,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Container(
                   height: MediaQuery.of(context).size.height *
                       0.30, // Reduced height from 0.4 to 0.25
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
                         Colors.white,
@@ -183,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 100, // Adjust the size as needed
                           width: 100,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -195,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
+                    const Center(
                       child: Text(
                         "Sign Up",
                         style: TextStyle(
@@ -205,7 +205,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextField(
                       controller: userNameController,
                       decoration: InputDecoration(
@@ -213,13 +213,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "User Name",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Default border color
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Focused border color
                             width: 1, // You can adjust the border width
                           ),
@@ -229,23 +229,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (!isUsernameValid)
                       Text(
                         usernameError,
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email),
+                        prefixIcon: const Icon(Icons.email),
                         hintText: "Email",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Default border color
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Focused border color
                             width: 1, // You can adjust the border width
                           ),
@@ -255,25 +255,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (!isEmailValid)
                       Text(
                         emailError,
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
-
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: passwordController,
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                         hintText: "Password",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Default border color
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFF113155), // Focused border color
                             width: 1, // You can adjust the border width
                           ),
@@ -283,7 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Color(0xFF113155),
+                            color: const Color(0xFF113155),
                           ),
                           onPressed: () {
                             setState(() {
@@ -302,7 +301,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         passwordError,
                         style: TextStyle(color: Colors.red),
                       ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: confirmPasswordController,
                       obscureText: !_isConfirmPasswordVisible,
@@ -343,7 +342,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         confirmPasswordError,
                         style: TextStyle(color: Colors.red),
                       ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
+
+
+
+
+
+
+
+
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Are you radiologist?",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF113155),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Switch(
+                          value:
+                              isRadioligist, // This boolean value should be defined in your state
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              isRadioligist =
+                                  newValue; // Update the state with the new value
+                            });
+                          },
+                          activeColor:
+                              const Color(0xFF90CAF9), // Customize active color
+                          inactiveThumbColor:
+                              Colors.grey, // Customize inactive thumb color
+                          inactiveTrackColor: Colors
+                              .grey[300], // Customize inactive track color
+                        ),
+                      ],
+                    ),
+
+
+
+
+
+
+
+
+
+
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Checkbox(
@@ -372,7 +420,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Accept terms & conditions"),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     // Gradient Button
                     ElevatedButton(
                       onPressed: () async {
@@ -391,13 +439,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               'email': emailController.text,
                               'password': passwordController.text,
                               'name': userNameController.text,
+                              'role': isRadioligist? "radiologist":"patient"
                             };
                             AuthService a = new AuthService();
                             // Call the signUp function
                             final response = await a.signUp(signupData);
 
                             // Handle the response
-                            if (response.statusCode == 200) {
+                            if (response.statusCode == 201) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -466,7 +515,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Center(
                       child: TextButton(
                         onPressed: () {

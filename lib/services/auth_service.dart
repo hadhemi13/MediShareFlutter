@@ -6,7 +6,7 @@ class AuthService {
   final String baseUrl = Constants.baseUrl; // Remplacez par l'URL de votre backend
 
   Future<http.Response> signUp(Map<String, dynamic> signupData) async {
-    print("signup function flutter invockedddddddddd 00000000000000000000000000000000000");
+    print("signup data : $signupData ...");
     final url = Uri.parse('$baseUrl${Constants.signup}');
     final response = await http.post(
       url,
