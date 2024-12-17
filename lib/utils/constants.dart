@@ -19,6 +19,7 @@ class Constants {
   static const String createPost = 'post';
   static const String likePost = 'post/inc/upvotes';
   static const String fetchPosts = 'post/posts';
+  static const String fetchAllComments = 'comment';
 }
 
 class ResponseMessage {

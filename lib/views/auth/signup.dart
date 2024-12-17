@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/views/confirmmail.dart';
-import 'package:medishareflutter/views/login.dart';
-import 'package:medishareflutter/views/terms.dart';
+import 'package:medishareflutter/views/auth/confirmmail.dart';
+import 'package:medishareflutter/views/auth/login.dart';
+import 'package:medishareflutter/views/auth/terms.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override

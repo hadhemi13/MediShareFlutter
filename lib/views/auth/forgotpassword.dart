@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/views/sendmail.dart';
+import 'package:medishareflutter/views/auth/sendmail.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override

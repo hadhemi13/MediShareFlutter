@@ -3,7 +3,7 @@ import 'package:medishareflutter/models/ImageResponse.dart';
 import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/utils/constants.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
-import 'package:medishareflutter/views/full_screen_image.dart';
+import 'package:medishareflutter/views/radiologue/full_screen_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FileDetailsPage extends StatelessWidget {
@@ -52,9 +52,9 @@ class FileDetailsPage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20),
-                Text(
+                const Text(
                   'Date: "21/02/2024"',
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
 

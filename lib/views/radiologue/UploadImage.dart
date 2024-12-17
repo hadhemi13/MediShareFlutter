@@ -33,7 +33,10 @@ class _UploadImageState extends State<UploadImage> {
     } else {
       // If no image is selected, navigate back
       print('No image selected.');
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
     }
   }
 
@@ -44,10 +47,12 @@ class _UploadImageState extends State<UploadImage> {
         final request = http.MultipartRequest('POST', uri);
 
         // Attach the image file
-        request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
+        request.files
+            .add(await http.MultipartFile.fromPath('file', _image!.path));
         final prefs = await SharedPreferences.getInstance();
         // Add additional fields like userId
-        request.fields['userId'] = await prefs.getString('userId')!; // Replace with dynamic user ID if needed
+        request.fields['userId'] = await prefs
+            .getString('userId')!; // Replace with dynamic user ID if needed
 
         final response = await request.send();
 

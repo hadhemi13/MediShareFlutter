@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/views/otpscreen.dart';
+import 'package:medishareflutter/views/auth/otpscreen.dart';
 
 class SendMailScreen extends StatelessWidget {
   @override

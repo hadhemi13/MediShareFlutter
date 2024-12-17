@@ -11,6 +11,7 @@ class CommentaireService {
   Future<Map<String, dynamic>> createComment(Map<String, dynamic> commentData) async {
     try {
       final uri = Uri.parse('$baseUrl${Constants.createComment}');
+      print(uri);
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
@@ -46,4 +47,33 @@ class CommentaireService {
       throw Exception('Error fetching comments: $e');
     }
   }
+
+  Future<http.Response> getAllComments() async {
+    try {
+      final uri = Uri.parse('$baseUrl${Constants.fetchAllComments}');
+      final response = await http.get(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+      
+      );
+
+      if (response.statusCode == 200) {
+       // return jsonDecode(response.body);
+       return response;
+      } else {
+        throw Exception('Failed to fetch comments: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching comments: $e');
+    }
+  }
+
+
+
+
+/*
+  @GET("comment")
+    fun getComment(): Call<List<Comment>>
+*/
+
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
-import 'package:medishareflutter/views/FilesPage.dart';
-import 'package:medishareflutter/views/HomePage.dart';
-import 'package:medishareflutter/views/ProfileScreen.dart';
-import 'package:medishareflutter/views/UploadImage.dart';
-import 'package:medishareflutter/views/login.dart';
+import 'package:medishareflutter/views/radiologue/FilesPage.dart';
+import 'package:medishareflutter/views/radiologue/HomePage.dart';
+import 'package:medishareflutter/views/auth/ProfileScreen.dart';
+import 'package:medishareflutter/views/radiologue/UploadImage.dart';
+import 'package:medishareflutter/views/auth/login.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
@@ -24,7 +24,7 @@ void main() async {
 }
 
 /// Main application widget
-class MyApp extends StatefulWidget  {
+class MyApp extends StatefulWidget {
 
   final bool initialIsLoggedIn;
 
@@ -52,9 +52,9 @@ late bool isLoggedIn;
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-      home: isLoggedIn 
-          ? MyHomePage() 
-          : LoginScreen(), 
+      home: isLoggedIn
+          ? const MyHomePage()
+          : LoginScreen(),
     );
   }
 }
@@ -69,13 +69,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-
-
-
   final List<Widget> _pages = [
     HomePage(),
     
-    FilesPage(),
+    const FilesPage(),
     const UploadImage(), // Passe directement updateIndex
     const ProfileView(),
   ];

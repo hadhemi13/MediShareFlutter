@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/views/login.dart';
+import 'package:medishareflutter/views/auth/login.dart';
 
 class confirmMailScreen extends StatelessWidget {
   @override

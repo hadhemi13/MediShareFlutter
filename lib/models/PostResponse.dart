@@ -1,13 +1,12 @@
-
 class PostResponse {
   final String id;
   final String title;
-  final int upvotes;
+   int upvotes;
   final String subreddit;
   final String timeAgo;
   final String author;
   final String image;
-  final bool statepost;
+  bool statepost;
   final String profileImage;
   final String content;
   PostResponse({
