@@ -3,6 +3,7 @@ import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
 import 'package:medishareflutter/viewmodels/clinique_viewmodel.dart';
+import 'package:medishareflutter/views/admin/map_screen.dart';
 import 'package:medishareflutter/views/auth/login.dart';
 import 'package:medishareflutter/views/radiologue/my_home_page.dart';
 import 'package:provider/provider.dart';

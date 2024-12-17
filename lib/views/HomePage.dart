@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/models/Comment.dart';
 import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/models/PostResponse.dart';
+import 'package:medishareflutter/models/displaying_posts.dart';
 import 'package:medishareflutter/utils/constants.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
 import 'dart:io';
@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<Post>> _postsFuture;
-  late Future<List<PostResponse>> _postsFuture2;
+  late Future<List<DisplayingPosts>> _postsFuture2;
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
               // Expanded ListView
             ),
             Expanded(
-              child: FutureBuilder<List<PostResponse>>(
+              child: FutureBuilder<List<DisplayingPosts>>(
                 future: _postsFuture2,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     itemCount: posts.length,
                     itemBuilder: (context, index) {
                       final post = posts[index];
-                      return PostCard(postres: post);
+                      return PostCard(postres: post.post);
                     },
                   );
                 },
