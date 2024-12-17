@@ -17,6 +17,8 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   File? _imageFile; // To store the picked image file
+  String userName = "";
+  String userEmail = "";
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
@@ -56,7 +58,33 @@ class _ProfileViewState extends State<ProfileView> {
       },
     );
   }
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+    _fetchUserEmail();
+    
+  }
 
+
+  Future<String> _fetchUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var userId =  await prefs.getString('userName');
+    var userEmaill =  await prefs.getString('userName');
+     this.userName  = userId as String;
+    
+    return userName; // Replace with your user ID logic
+  }
+
+    Future<String> _fetchUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var userEmail =  await prefs.getString('userEmail');
+     this.userEmail = userEmail as String;
+    
+      return userEmail!; // Replace with your user ID logic
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,7 +92,7 @@ class _ProfileViewState extends State<ProfileView> {
         backgroundColor: Colors.grey[100],
         body: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Stack(
                 clipBehavior: Clip.none,
@@ -105,24 +133,24 @@ class _ProfileViewState extends State<ProfileView> {
                                 backgroundImage: _imageFile != null
                                     ? FileImage(
                                         _imageFile!) // Display the picked image
-                                    : const AssetImage('assets/hadh.jpg')
+                                    : const AssetImage('assets/profile.png')
                                         as ImageProvider,
                               ),
                             ),
                             SizedBox(width: 16),
                             // Profile Name and Email
-                            const Column(
+                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "name",
+                                  this.userName,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  "email",
+                                  this.userEmail,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey,
@@ -143,16 +171,7 @@ class _ProfileViewState extends State<ProfileView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   children: [
-                    _buildOptionCard(
-                      context,
-                      icon: Icons.dark_mode,
-                      title: 'Dark mode',
-                      trailing: Switch(
-                        value: false,
-                        onChanged: (value) {},
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                   
                     _buildOptionCard(
                       context,
                       icon: Icons.edit,

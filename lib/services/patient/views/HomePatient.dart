@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
+import 'package:medishareflutter/services/patient/views/FullScreenMap.dart';
 import 'package:medishareflutter/services/patient/views/ListImagePatient.dart';
 import 'dart:convert';
 
@@ -14,7 +17,47 @@ class MyHomePagePatient extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePagePatient> {
   int _selectedIndex = 0;  // Track the selected index
   final String baseUrl=Constants.baseUrl;
+  String userName = "";
 
+// List to store clinics fetched from the API
+  List<Map<String, dynamic>> clinics = [];
+
+  // Fetch clinics from the API
+  Future<void> fetchClinics() async {
+    final url = Uri.parse('${baseUrl}cliniques/clinics'); // API Endpoint
+    try {
+      print("clicnks fetchClinics function is called ");
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          // Update the list with the fetched clinics
+          clinics = List<Map<String, dynamic>>.from(data['cliniques'].map((clinic) {
+            return {
+              'name': clinic['nom'],
+              'latitude': clinic['latitude'],
+              'longitude': clinic['longitude'],
+              'region': clinic['region'],
+              'openTime': '8:00 AM', // Default times if not provided in API
+              'closeTime': '6:00 PM',
+            };
+          }));
+        });
+      } else {
+        throw Exception("Failed to load clinics. Status Code: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Error fetching clinics: $error");
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+    fetchClinics(); // Fetch clinics on widget initialization
+  }
 
   Future<String> _fetchUserId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -23,6 +66,16 @@ class _MyHomePageState extends State<MyHomePagePatient> {
     
         return userId!; // Replace with your user ID logic
   }
+  Future<String> _fetchUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var userId =  await prefs.getString('userName');
+     this.userName  = userId as String;
+     print("00000000000000000000000the name of the user is "+this.userName);
+    
+        return userName!; // Replace with your user ID logic
+  }
+
 
   Future<List<Map<String, dynamic>>> _fetchRecommendations(String userId) async {
     final url = Uri.parse('${baseUrl}ai/recommendations');
@@ -55,7 +108,7 @@ Widget build(BuildContext context) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hi, Jessica",
+               "Hi ${this.userName}",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -74,7 +127,7 @@ Widget build(BuildContext context) {
                   SizedBox(width: 8.0),
                   Expanded(
                     child: Text(
-                      "Stuck on where to start? Use the Home Maintenance Planner.",
+                      "Stuck on where to start? Use the Home MediShare.",
                       style: TextStyle(color: Colors.green[900]),
                     ),
                   ),
@@ -82,38 +135,17 @@ Widget build(BuildContext context) {
               ),
             ),
             SizedBox(height: 17.0),
-            SizedBox(
-              height: 190,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _buildClinicCard(
-                    context,
-                    "Clinic A",
-                    "assets/clinic1.jpg",
-                    "https://www.google.com/maps?q=clinic+a",
-                    "8:00 AM",
-                    "7:00 PM",
-                  ),
-                  _buildClinicCard(
-                    context,
-                    "Clinic B",
-                    "assets/clinic1.jpg",
-                    "https://www.google.com/maps?q=clinic+b",
-                    "8:00 AM",
-                    "7:00 PM",
-                  ),
-                  _buildClinicCard(
-                    context,
-                    "Clinic C",
-                    "assets/clinic1.jpg",
-                    "https://www.google.com/maps?q=clinic+c",
-                    "8:00 AM",
-                    "7:00 PM",
-                  ),
-                ],
+           SizedBox(
+                height: 210, // Adjust height to fit the mini-map
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: clinics.length,
+                  itemBuilder: (context, index) {
+                    final clinic = clinics[index];
+                    return _buildClinicCard(context, clinic);
+                  },
+                ),
               ),
-            ),
             SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,47 +275,84 @@ Widget build(BuildContext context) {
   );
 }
 
-  Widget _buildClinicCard(BuildContext context, String name, String imagePath, String url,
-      String openTime, String closeTime) {
+  Widget _buildClinicCard(BuildContext context, Map<String, dynamic> clinic) {
     return GestureDetector(
-      onTap: () => print("button url tapped"),
+      onTap: () {
+        // You can navigate to a full-screen map or details page here.
+        print("Tapped on ${clinic['name']}");
+
+
+
+          Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FullScreenMap(
+            latitude: clinic['latitude'],
+            longitude: clinic['longitude'],
+            clinicName: clinic['name'],
+          ),
+        ),
+      );
+      },
       child: SizedBox(
-        height: 160,
-        width: 180,
-      
+        height: 200,
+        width: 200,
         child: Card(
           elevation: 3,
-          margin: EdgeInsets.symmetric(horizontal: 5.0),
+          margin: EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                imagePath,
-                height: 80,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              // Mini Map inside the card
+              SizedBox(
+                height: 120,
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: LatLng(clinic['latitude'], clinic['longitude']),
+                    initialZoom: 13,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      subdomains: ['a', 'b', 'c'],
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: LatLng(clinic['latitude'], clinic['longitude']),
+                          width: 30.0,
+                          height: 30.0,
+                          child: Icon(
+                            Icons.location_pin,
+                            color: Colors.red,
+                            size: 30,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
+              // Clinic Details
               Padding(
-                padding: const EdgeInsets.all(4.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      clinic['name'],
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 4.0),
                     Text(
-                      "Open: $openTime",
+                      "Open: ${clinic['openTime']}",
                       style: TextStyle(color: Colors.green[800]),
                     ),
                     Text(
-                      "Close: $closeTime",
+                      "Close: ${clinic['closeTime']}",
                       style: TextStyle(color: Colors.red[800]),
                     ),
                   ],
@@ -296,3 +365,4 @@ Widget build(BuildContext context) {
     );
   }
 }
+

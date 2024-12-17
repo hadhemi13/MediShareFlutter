@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medishareflutter/models/Comment.dart';
 import 'package:medishareflutter/models/Post.dart';
 import 'package:medishareflutter/models/PostResponse.dart';
 import 'package:medishareflutter/models/displaying_posts.dart';
