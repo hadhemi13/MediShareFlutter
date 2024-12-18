@@ -23,10 +23,10 @@ class LoginViewModel extends ChangeNotifier {
         'email': email,
         'password': password,
       });
-
+ final data =
+            jsonDecode(response.body);
       if (response.statusCode == 201) {
-        final data =
-            jsonDecode(response.body); // Assuming response.body contains JSON
+        // Assuming response.body contains JSON
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('userId', data['userId']);
@@ -41,7 +41,7 @@ class LoginViewModel extends ChangeNotifier {
         _setLoading(false);
         return true; // Login successful
       } else {
-        _setErrorMessage('Login failed: ${response.body}');
+        _setErrorMessage('Login failed: ${data['message']}');
         _setLoading(false);
         return false;
       }

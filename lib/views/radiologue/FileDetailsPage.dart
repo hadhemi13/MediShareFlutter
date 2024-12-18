@@ -17,7 +17,7 @@ class FileDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text(image.title)),
+        appBar: AppBar(title: Text("Add Post")),
         body: SingleChildScrollView(
           // Wrap body in SingleChildScrollView to make it responsive
           child: Padding(
@@ -44,12 +44,7 @@ class FileDetailsPage extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  image.title,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+              
 
                 const SizedBox(height: 20),
                 const Text(

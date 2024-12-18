@@ -41,7 +41,30 @@ class _FilesPageState extends State<FilesPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Erreur: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('Aucune image disponible.'));
+             return  Center( // Show the error image when no images are available
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/notfound.png',
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(height: 16.0),
+                            Text(
+                              'No images available',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    
+            
+        
             } else {
             
               // Afficher les images sous forme de ListView.builder
@@ -62,9 +85,9 @@ class _FilesPageState extends State<FilesPage> {
                         height: 60,
                         fit: BoxFit.cover,
                       ),
-                      title: Text(image.title),
-                      subtitle: Text(image.title),
-                      trailing: Icon(Icons.more_vert),
+                      title: Text("Add Post"),
+                      subtitle: Text("Click to add this image as Post"),
+                      
                       onTap: () {
                         // Naviguer vers la page de détails du fichier
                         Navigator.push(
