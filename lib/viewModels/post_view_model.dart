@@ -28,23 +28,25 @@ Future<List<DisplayingPosts>> fetchPosts() async {
   try {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId')!;
-
     // Fetch posts and comments
     final response = await _postService.getAllPosts(userId);
     final commentsResponse = await _commentService.getAllComments();
 
     if (response.contentLength! > 0 && commentsResponse.contentLength! > 0) {
+
       // Parse posts and comments JSON
       List<dynamic> postData = jsonDecode(response.body);
       List<dynamic> commentData = jsonDecode(commentsResponse.body);
 
       List<PostResponse> posts =
           postData.map((item) => PostResponse.fromJson(item)).toList();
+
       List<Comment> comments =
           commentData.map((item) => Comment.fromJson(item)).toList();
 
       // Map posts to their related comments
       List<DisplayingPosts> displayingPosts = posts.map((post) {
+
         // Filter comments for the current post
         List<Comment> relatedComments = comments
             .where((comment) => comment.postId == post.id)
@@ -55,6 +57,7 @@ Future<List<DisplayingPosts>> fetchPosts() async {
 
       return displayingPosts;
     } else {
+
       throw Exception('Failed to load posts or comments');
     }
   } catch (e) {
