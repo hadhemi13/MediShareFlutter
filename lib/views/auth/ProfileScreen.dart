@@ -17,7 +17,7 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   File? _imageFile; // To store the picked image file
-  String userName = "";
+  String userName = "Welcome";
   String userEmail = "";
 
   Future<void> _pickImage(ImageSource source) async {
@@ -467,7 +467,7 @@ void _showEditProfileDialog(BuildContext context) async {
             children: [
               const CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/hadh.jpg'),
+                backgroundImage: AssetImage('assets/profile.png'),
               ),
               const SizedBox(height: 16),
               TextFormField(
