@@ -109,7 +109,7 @@ if (recommendations.isEmpty) {
           Image.asset(
             'assets/error_notfound.jpg',
             height: 200,
-            width: 200,
+            width: 300,
             fit: BoxFit.cover,
           ),
           SizedBox(height: 16.0),

@@ -187,6 +187,42 @@ Widget build(BuildContext context) {
                   return Center(child: Text('Error: ${recommendationsSnapshot.error}'));
                 } else if (recommendationsSnapshot.hasData) {
                   final recommendations = recommendationsSnapshot.data!;
+
+
+
+                  if (recommendations.isEmpty) {
+    // Show error image when no recommendations are found
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/error_notfound.jpg',
+            height: 100,
+            width: 200,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'No recommendations available',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
                   final visibleRecommendations = recommendations.take(3).toList();
                   return SizedBox(
                     height: 150,
