@@ -45,7 +45,6 @@ class PostService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'userId': userId}),
     );
-
     return response;
   }
 
