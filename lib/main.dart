@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:medishareflutter/services/patient/views/HomePatientMAIN.dart';
+import 'package:medishareflutter/viewModels/clinique_viewmodel.dart';
 import 'package:medishareflutter/viewModels/login_view_model.dart';
 import 'package:medishareflutter/viewModels/post_view_model.dart';
-import 'package:medishareflutter/viewmodels/clinique_viewmodel.dart';
 import 'package:medishareflutter/views/admin/admin_home_page.dart';
 import 'package:medishareflutter/views/auth/login.dart';
 import 'package:medishareflutter/views/radiologue/my_home_page.dart';
@@ -13,7 +13,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   final userRole = prefs.getString('userRole') ?? "no role";
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -49,8 +49,8 @@ late String userRole;
     isLoggedIn = widget.initialIsLoggedIn;
     userRole = widget.userRole;
   }
-  
-  
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

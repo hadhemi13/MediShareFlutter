@@ -14,7 +14,7 @@ class LoginViewModel extends ChangeNotifier {
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-
+/*
   // Method to handle login
   Future<bool> login(String email, String password) async {
     _setLoading(true);
@@ -40,6 +40,48 @@ class LoginViewModel extends ChangeNotifier {
         // final data = jsonDecode(response.body);
         _setLoading(false);
         return true; // Login successful
+      } else {
+        _setErrorMessage('Login failed: ${response.body}');
+        _setLoading(false);
+        return false;
+      }
+    } catch (e) {
+      _setErrorMessage('An error occurred: $e');
+      _setLoading(false);
+      return false;
+    }
+  }
+*/
+  Future<bool> login(String email, String password) async {
+    _setLoading(true);
+    try {
+      final response = await _authService.login({
+        'email': email,
+        'password': password,
+      });
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body); // Assuming response.body contains JSON
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userId', data['userId']);
+        await prefs.setString('userName', data['userName']);
+        await prefs.setString('userEmail', data['userEmail']);
+        await prefs.setString('accessToken', data['accessToken']);
+        await prefs.setString('refreshToken', data['refreshToken']);
+        await prefs.setString('userRole', data['userRole']);
+
+        _setLoading(false);
+        return true; // Login successful
+      } else if (response.statusCode == 401) {
+        final errorData = jsonDecode(response.body);
+        if (errorData['message'] == 'you must be banned!') {
+          _setErrorMessage('Oops, you can\'t open your space until the admin confirms that you are a radiologist!');
+        } else {
+          _setErrorMessage('Login failed: ${response.body}');
+        }
+        _setLoading(false);
+        return false;
       } else {
         _setErrorMessage('Login failed: ${response.body}');
         _setLoading(false);
