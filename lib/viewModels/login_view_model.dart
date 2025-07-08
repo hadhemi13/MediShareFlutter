@@ -60,7 +60,7 @@ class LoginViewModel extends ChangeNotifier {
         'password': password,
       });
 
-      if (response.statusCode == 201) {
+      if (response.statusCode < 210) {
         final data = jsonDecode(response.body); // Assuming response.body contains JSON
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);

@@ -58,33 +58,43 @@ class _ProfileViewState extends State<ProfileView> {
       },
     );
   }
+
   @override
   void initState() {
     super.initState();
-    _fetchUserName();
-    _fetchUserEmail();
-    
+      _loadUserData();
   }
 
-
-  Future<String> _fetchUserName() async {
+  void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('userName') ?? "Welcome";
+    final email = prefs.getString('userEmail') ?? "";
 
-    var userId =  await prefs.getString('userName');
-    var userEmaill =  await prefs.getString('userName');
-     this.userName  = userId as String;
-    
-    return userName; // Replace with your user ID logic
+    setState(() {
+      userName = name;
+      userEmail = email;
+    });
   }
 
-    Future<String> _fetchUserEmail() async {
-    final prefs = await SharedPreferences.getInstance();
+  // Future<String> _fetchUserName() async {
+  //   final prefs = await SharedPreferences.getInstance();
 
-    var userEmail =  await prefs.getString('userEmail');
-     this.userEmail = userEmail as String;
-    
-      return userEmail!; // Replace with your user ID logic
-  }
+  //   var userId = await prefs.getString('userName');
+  //   var userEmaill = await prefs.getString('userName');
+  //   this.userName = userId as String;
+
+  //   return userName; // Replace with your user ID logic
+  // }
+
+  // Future<String> _fetchUserEmail() async {
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   var userEmail = await prefs.getString('userEmail');
+  //   this.userEmail = userEmail as String;
+
+  //   return userEmail!; // Replace with your user ID logic
+  // }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -139,7 +149,7 @@ class _ProfileViewState extends State<ProfileView> {
                             ),
                             SizedBox(width: 16),
                             // Profile Name and Email
-                             Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -171,7 +181,6 @@ class _ProfileViewState extends State<ProfileView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   children: [
-                   
                     _buildOptionCard(
                       context,
                       icon: Icons.edit,

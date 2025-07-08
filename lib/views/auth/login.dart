@@ -450,13 +450,13 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   // Function to show the custom 401 Unauthorized dialog
-  void showUnauthorizedDialog() {
+  void showUnauthorizedDialog(String title, String msg) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Banned Account'),
-          content: Text('You can\'t access as a radiologist your mail must be confirmed by the admin '),
+          title: Text(title),
+          content: Text(msg),
           actions: [
             TextButton(
               onPressed: () {
@@ -619,6 +619,7 @@ class LoginScreenState extends State<LoginScreen> {
                             if (success) {
                               final prefs = await SharedPreferences.getInstance();
                               var userRole = await prefs.getString('userRole');
+
                               if (userRole == "radiologist") {
                                 Navigator.pushAndRemoveUntil(
                                   context,
@@ -642,12 +643,12 @@ class LoginScreenState extends State<LoginScreen> {
                                 );
                               }
                             } else {
-                              showUnauthorizedDialog(); // Show the 401 dialog
+                              showUnauthorizedDialog("login failed", "check your credentials!"); // Show the 401 dialog
                             }
                           } catch (error) {
                             print("Error: $error");
                             if (error.toString().contains("401")) {
-                              showUnauthorizedDialog(); // Show the 401 dialog
+                              showUnauthorizedDialog("error 401", error.toString() ); // Show the 401 dialog
                             }
                           }
                         }
